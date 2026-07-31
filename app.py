@@ -490,7 +490,7 @@ def ask_openrouter(messages):
 
     payload = {
         "model": OPENROUTER_MODEL,
-        "messages": messages
+        "messages": messages,
         "max_tokens": 5000
     }
 
