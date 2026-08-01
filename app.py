@@ -66,6 +66,9 @@ Math formatting:
 - Write math using plain text instead.
 - For example, write "x^2" instead of "$x^2$".
 - Write "x^3 / 3 + C" instead of "\\frac{x^3}{3} + C".
+- Use the immediately preceding messages to understand follow-up questions.
+- When the user says "it", "that", "this", "they", or similar references, infer the most likely referent from the recent conversation.
+- Do not ask for clarification when the intended referent is reasonably clear from context.
 """.strip()
 # ============================================================
 # DATABASE
