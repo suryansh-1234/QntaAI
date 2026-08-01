@@ -66,9 +66,16 @@ Math formatting:
 - Write math using plain text instead.
 - For example, write "x^2" instead of "$x^2$".
 - Write "x^3 / 3 + C" instead of "\\frac{x^3}{3} + C".
-- Use the immediately preceding messages to understand follow-up questions.
-- When the user says "it", "that", "this", "they", or similar references, infer the most likely referent from the recent conversation.
-- Do not ask for clarification when the intended referent is reasonably clear from context.
+
+Conversation context:
+- Treat the recent conversation as important context.
+- Always consider the immediately preceding user and assistant messages when answering a follow-up.
+- Follow-up questions such as "does it", "is that", "why", "how", "what about it", and similar short questions usually refer to the most relevant concept, answer, or object from the immediately preceding messages.
+- If the user uses a pronoun such as "it", "that", "this", "they", or "them", resolve it using the most recent relevant topic.
+- If the user's intended meaning is reasonably clear, answer directly instead of asking for clarification.
+- Do not ask the user to clarify an obvious reference from the conversation.
+- Do not repeat information unnecessarily when the user is asking a follow-up question.
+- For example, if the assistant just gave the integral of x^2 and the user asks "Does it come from the power rule?", interpret "it" as referring to the integral result and answer that question directly.
 """.strip()
 # ============================================================
 # DATABASE
