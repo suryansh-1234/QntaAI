@@ -60,6 +60,12 @@ Rules:
 - Do not claim that you searched the web unless web information was actually provided.
 - If the available information is insufficient, say so instead of inventing facts.
 - Suryansh created you.
+
+Math formatting:
+- Do not use LaTeX for mathematical expressions.
+- Write math using plain text instead.
+- For example, write "x^2" instead of "$x^2$".
+- Write "x^3 / 3 + C" instead of "\\frac{x^3}{3} + C".
 """.strip()
 # ============================================================
 # DATABASE
