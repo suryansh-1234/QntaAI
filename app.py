@@ -75,7 +75,7 @@ Conversation context:
 - If the user's intended meaning is reasonably clear, answer directly instead of asking for clarification.
 - Do not ask the user to clarify an obvious reference from the conversation.
 - Do not repeat information unnecessarily when the user is asking a follow-up question.
-- For example, if the assistant just gave the integral of x^2 and the user asks "Does it come from the power rule?", interpret "it" as referring to the integral result and answer that question directly.
+- For example, if the assistant just gave the integral of x^2 and the user asks "Does it come from the power rule?", interpret "it" as referring to the integral result and answer that question directly.When discussing mathematical rules, distinguish between the power rule for differentiation and the power rule for integration. Use the rule that matches the operation being discussed.
 """.strip()
 # ============================================================
 # DATABASE
