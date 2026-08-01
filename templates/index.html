@@ -1001,7 +1001,66 @@
                 display: none;
             }
         }
-    </style>
+    
+    /* =====================================================
+       INDIVIDUAL CHAT DELETE BUTTON
+       ===================================================== */
+
+    .history-item {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        width: 100%;
+    }
+
+    .history-chat-button {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border: 0;
+        background: transparent;
+        color: inherit;
+        text-align: left;
+        cursor: pointer;
+        padding: 9px 8px;
+        border-radius: 8px;
+        font: inherit;
+    }
+
+    .history-chat-title {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .history-delete-button {
+        flex: 0 0 auto;
+        border: 0;
+        background: transparent;
+        color: var(--muted);
+        cursor: pointer;
+        padding: 7px;
+        border-radius: 7px;
+        opacity: 0;
+        transition:
+            opacity 0.15s ease,
+            background 0.15s ease,
+            color 0.15s ease;
+    }
+
+    .history-item:hover .history-delete-button,
+    .history-delete-button:focus-visible {
+        opacity: 1;
+    }
+
+    .history-delete-button:hover {
+        background: rgba(255, 70, 70, 0.12);
+        color: #ff6b6b;
+    }
+
+</style>
 </head>
 <body>
 
@@ -1797,88 +1856,65 @@ function saveCurrentChat() {
    ========================================================= */
 
 function renderHistory() {
-
-    historyEl.innerHTML =
-        "";
-
+    historyEl.innerHTML = "";
 
     if (chats.length === 0) {
+        const empty = document.createElement("div");
 
-        const empty =
-            document.createElement(
-                "div"
-            );
+        empty.style.padding = "12px 8px";
+        empty.style.color = "var(--muted)";
+        empty.style.fontSize = "12px";
+        empty.textContent = "No conversations yet.";
 
-        empty.style.padding =
-            "12px 8px";
-
-        empty.style.color =
-            "var(--muted)";
-
-        empty.style.fontSize =
-            "12px";
-
-        empty.textContent =
-            "No conversations yet.";
-
-
-        historyEl.appendChild(
-            empty
-        );
-
+        historyEl.appendChild(empty);
         return;
     }
 
+    for (const chat of chats) {
+        const item = document.createElement("div");
 
-    for (
-        const chat of chats
-    ) {
+        item.className = "history-item";
 
-        const button =
-            document.createElement(
-                "button"
-            );
-
-        button.type =
-            "button";
-
-        button.className =
-            "history-item";
-
-
-        if (
-            chat.id ===
-            currentChat.id
-        ) {
-
-            button.classList.add(
-                "active"
-            );
+        if (chat.id === currentChat.id) {
+            item.classList.add("active");
         }
 
+        const button = document.createElement("button");
+
+        button.type = "button";
+        button.className = "history-chat-button";
 
         button.innerHTML = `
             <span>💬</span>
-            <span>
-                ${escapeHtml(
-                    chat.title ||
-                    "New chat"
-                )}
+            <span class="history-chat-title">
+                ${escapeHtml(chat.title || "New chat")}
             </span>
         `;
 
+        button.addEventListener("click", () => {
+            loadChat(chat.id);
+        });
 
-        button.addEventListener(
-            "click",
-            () => {
-                loadChat(chat.id);
-            }
+        const deleteButton = document.createElement("button");
+
+        deleteButton.type = "button";
+        deleteButton.className = "history-delete-button";
+        deleteButton.title = "Delete chat";
+        deleteButton.setAttribute(
+            "aria-label",
+            `Delete ${chat.title || "chat"}`
         );
+        deleteButton.textContent = "🗑️";
 
+        deleteButton.addEventListener("click", event => {
+            event.stopPropagation();
+            deleteChat(chat.id);
+        });
 
-        historyEl.appendChild(
-            button
-        );
+        item.appendChild(button);
+        item.appendChild(deleteButton);
+
+        historyEl.appendChild(item);
     }
 }
 
@@ -2408,6 +2444,64 @@ async function sendMessage() {
 /* =========================================================
    CHAT MEMORY HELPERS
 ========================================================= */
+
+async function deleteChat(chatId) {
+    const chat = chats.find(
+        item => item.id === chatId
+    );
+
+    if (!chat) {
+        return;
+    }
+
+    const confirmed = window.confirm(
+        `Delete "${chat.title || "New chat"}"?`
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    chats = chats.filter(
+        item => item.id !== chatId
+    );
+
+    saveChats();
+
+    if (currentChat.id === chatId) {
+        currentChat = {
+            id: createId(),
+            title: "New chat",
+            messages: []
+        };
+
+        chatTitle.textContent = "New chat";
+
+        messagesEl.innerHTML = `
+            <div
+                class="welcome"
+                id="welcome"
+            >
+                <div class="welcome-orb">
+                    Q
+                </div>
+
+                <h1>
+                    What are you curious about?
+                </h1>
+
+                <p>
+                    I'm QntaAI — your AI tutor.
+                    Ask me anything and let's
+                    explore it together.
+                </p>
+            </div>
+        `;
+    }
+
+    renderHistory();
+}
+
 
 function clearAllChats() {
 
