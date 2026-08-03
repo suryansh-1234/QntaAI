@@ -1,0 +1,2587 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#09090b"
+    >
+
+    <title>QntaAI</title>
+
+    <style>
+        :root {
+            --bg: #09090b;
+            --sidebar: #111113;
+            --surface: #18181b;
+            --surface-2: #202024;
+            --border: rgba(255, 255, 255, .09);
+            --text: #f4f4f5;
+            --muted: #a1a1aa;
+            --accent: #8b5cf6;
+            --accent-2: #a78bfa;
+            --user: #2a2735;
+            --max-chat: 850px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+
+            font-family:
+                Inter,
+                ui-sans-serif,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            overflow: hidden;
+        }
+
+        button,
+        textarea {
+            font: inherit;
+        }
+
+        button {
+            border: 0;
+            cursor: pointer;
+        }
+
+        /* =========================
+           APP
+        ========================= */
+
+        .app {
+            display: flex;
+
+            width: 100%;
+            height: 100dvh;
+        }
+
+        /* =========================
+           SIDEBAR
+        ========================= */
+
+        .sidebar {
+            width: 280px;
+            height: 100%;
+
+            flex-shrink: 0;
+
+            display: flex;
+            flex-direction: column;
+
+            background: var(--sidebar);
+
+            border-right:
+                1px solid var(--border);
+
+            padding: 14px;
+
+            z-index: 50;
+
+            transition:
+                transform .25s ease;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+
+            gap: 11px;
+
+            padding:
+                10px 8px 20px;
+        }
+
+        .brand-icon {
+            width: 34px;
+            height: 34px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 11px;
+
+            color: white;
+
+            font-weight: 800;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #7c3aed,
+                    #ec4899
+                );
+
+            box-shadow:
+                0 0 25px
+                rgba(139, 92, 246, .25);
+        }
+
+        .brand-name {
+            font-weight: 700;
+            letter-spacing: -.3px;
+        }
+
+        .new-chat {
+            width: 100%;
+
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+
+            padding:
+                11px 13px;
+
+            border-radius: 10px;
+
+            background: transparent;
+
+            color: var(--text);
+
+            border:
+                1px solid var(--border);
+
+            text-align: left;
+
+            transition:
+                background .2s,
+                border-color .2s;
+        }
+
+        .new-chat:hover {
+            background: var(--surface);
+
+            border-color:
+                rgba(255,255,255,.15);
+        }
+
+        .history-title {
+            padding:
+                24px 8px 10px;
+
+            color: var(--muted);
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            letter-spacing: 1px;
+
+            text-transform: uppercase;
+        }
+
+        .history {
+            flex: 1;
+
+            overflow-y: auto;
+
+            padding-right: 3px;
+        }
+
+        .history::-webkit-scrollbar,
+        .messages::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .history::-webkit-scrollbar-thumb,
+        .messages::-webkit-scrollbar-thumb {
+            background: #303034;
+
+            border-radius: 20px;
+        }
+
+        .history-item {
+            width: 100%;
+
+            display: flex;
+            align-items: center;
+
+            gap: 9px;
+
+            padding: 10px;
+
+            margin-bottom: 3px;
+
+            border-radius: 9px;
+
+            color: var(--muted);
+
+            background: transparent;
+
+            text-align: left;
+
+            font-size: 13px;
+        }
+
+        .history-item:hover,
+        .history-item.active {
+            color: var(--text);
+            background: var(--surface);
+        }
+
+        .history-item span:last-child {
+            overflow: hidden;
+
+            text-overflow: ellipsis;
+
+            white-space: nowrap;
+        }
+
+        .sidebar-footer {
+            padding-top: 12px;
+
+            border-top:
+                1px solid var(--border);
+
+            color: var(--muted);
+
+            font-size: 11px;
+
+            text-align: center;
+        }
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .main {
+            min-width: 0;
+
+            flex: 1;
+
+            height: 100%;
+
+            display: flex;
+            flex-direction: column;
+
+            position: relative;
+        }
+
+        .topbar {
+            height: 60px;
+
+            flex-shrink: 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding:
+                0 20px;
+
+            border-bottom:
+                1px solid var(--border);
+
+            background:
+                rgba(9, 9, 11, .82);
+
+            backdrop-filter:
+                blur(18px);
+
+            z-index: 10;
+        }
+
+        .topbar-title {
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+        }
+
+        .online {
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: #4ade80;
+
+            box-shadow:
+                0 0 10px #4ade80;
+        }
+
+        .menu-button {
+            display: none;
+
+            width: 36px;
+            height: 36px;
+
+            margin-right: 8px;
+
+            border-radius: 9px;
+
+            color: var(--text);
+
+            background: transparent;
+        }
+
+        .menu-button:hover {
+            background: var(--surface);
+        }
+
+        /* =========================
+           MESSAGES
+        ========================= */
+
+        .messages {
+            flex: 1;
+
+            overflow-y: auto;
+
+            scroll-behavior: smooth;
+
+            padding:
+                30px 20px 170px;
+        }
+
+        .message {
+            width: 100%;
+
+            max-width: var(--max-chat);
+
+            margin:
+                0 auto 30px;
+
+            display: flex;
+
+            gap: 15px;
+
+            animation:
+                messageIn .25s ease;
+        }
+
+        @keyframes messageIn {
+            from {
+                opacity: 0;
+                transform:
+                    translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform:
+                    translateY(0);
+            }
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+
+            flex: 0 0 32px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 9px;
+
+            font-size: 13px;
+
+            font-weight: 700;
+        }
+
+        .avatar.user {
+            background: #3f3f46;
+        }
+
+        .avatar.ai {
+            color: white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #7c3aed,
+                    #db2777
+                );
+        }
+
+        .message-body {
+            min-width: 0;
+
+            flex: 1;
+
+            line-height: 1.75;
+
+            font-size: 15px;
+        }
+
+        .message-role {
+            margin-bottom: 4px;
+
+            font-size: 12px;
+
+            color: var(--muted);
+
+            font-weight: 600;
+        }
+
+        .message-text {
+            white-space: pre-wrap;
+
+            overflow-wrap: anywhere;
+        }
+
+        .message.user .message-body {
+            padding:
+                12px 15px;
+
+            border-radius: 15px;
+
+            background: var(--user);
+        }
+
+        .message.user .message-role {
+            color: #d4d4d8;
+        }
+
+        /* =========================
+           WELCOME
+        ========================= */
+
+        .welcome {
+            max-width: 720px;
+
+            margin:
+                9vh auto 0;
+
+            text-align: center;
+        }
+
+        .welcome-orb {
+            width: 62px;
+            height: 62px;
+
+            display: grid;
+            place-items: center;
+
+            margin:
+                0 auto 25px;
+
+            border-radius: 20px;
+
+            font-size: 27px;
+
+            font-weight: 800;
+
+            color: white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #7c3aed,
+                    #ec4899
+                );
+
+            box-shadow:
+                0 0 50px
+                rgba(139, 92, 246, .25);
+        }
+
+        .welcome h1 {
+            font-size:
+                clamp(30px, 5vw, 48px);
+
+            letter-spacing: -2px;
+
+            margin-bottom: 12px;
+        }
+
+        .welcome p {
+            color: var(--muted);
+
+            line-height: 1.7;
+        }
+
+        .suggestions {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 10px;
+
+            margin-top: 30px;
+        }
+
+        .suggestion {
+            padding: 14px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 12px;
+
+            color: var(--muted);
+
+            background:
+                rgba(255,255,255,.02);
+
+            text-align: left;
+
+            transition:
+                background .2s,
+                color .2s,
+                transform .2s;
+        }
+
+        .suggestion:hover {
+            color: var(--text);
+
+            background:
+                var(--surface);
+
+            transform:
+                translateY(-2px);
+        }
+
+        /* =========================
+           TYPING
+        ========================= */
+
+        .typing {
+            display: flex;
+            align-items: center;
+
+            gap: 5px;
+
+            padding-top: 8px;
+        }
+
+        .typing span {
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background:
+                var(--accent-2);
+
+            animation:
+                typing 1.2s
+                infinite
+                ease-in-out;
+        }
+
+        .typing span:nth-child(2) {
+            animation-delay: .15s;
+        }
+
+        .typing span:nth-child(3) {
+            animation-delay: .3s;
+        }
+
+        @keyframes typing {
+            0%,
+            60%,
+            100% {
+                opacity: .25;
+
+                transform:
+                    translateY(0);
+            }
+
+            30% {
+                opacity: 1;
+
+                transform:
+                    translateY(-4px);
+            }
+        }
+
+        /* =========================
+           SOURCES
+        ========================= */
+
+        .sources {
+            margin-top: 14px;
+
+            display: flex;
+            flex-direction: column;
+
+            gap: 7px;
+        }
+
+        .sources-title {
+            color: var(--muted);
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            text-transform: uppercase;
+
+            letter-spacing: .8px;
+        }
+
+        .source {
+            display: block;
+
+            padding:
+                9px 11px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 9px;
+
+            color: var(--muted);
+
+            background:
+                rgba(255,255,255,.02);
+
+            font-size: 12px;
+
+            text-decoration: none;
+        }
+
+        .source:hover {
+            color: var(--text);
+
+            background:
+                var(--surface);
+        }
+
+        /* =========================
+           COMPOSER
+        ========================= */
+
+        .composer-wrap {
+            position: absolute;
+
+            left: 0;
+            right: 0;
+            bottom: 0;
+
+            z-index: 20;
+
+            padding:
+                12px 16px
+                calc(
+                    12px +
+                    env(safe-area-inset-bottom)
+                );
+
+            background:
+                linear-gradient(
+                    to top,
+                    #08080a 65%,
+                    rgba(8,8,10,0)
+                );
+        }
+
+        .composer {
+            width: 100%;
+
+            max-width: 900px;
+
+            margin: 0 auto;
+
+            display: flex;
+            flex-direction: column;
+
+            padding: 8px;
+
+            border:
+                1px solid
+                rgba(255,255,255,.10);
+
+            border-radius: 18px;
+
+            background:
+                #171719;
+
+            box-shadow:
+                0 10px 40px
+                rgba(0,0,0,.25);
+        }
+
+        .composer-main {
+            display: flex;
+            align-items: flex-end;
+
+            gap: 8px;
+        }
+
+        .composer textarea {
+            flex: 1;
+
+            min-width: 0;
+
+            resize: none;
+
+            border: 0;
+            outline: 0;
+
+            background: transparent;
+
+            color: #fff;
+
+            font: inherit;
+
+            font-size: 16px;
+
+            line-height: 1.45;
+
+            min-height: 44px;
+
+            max-height: 140px;
+
+            padding:
+                10px 6px;
+        }
+
+        .composer textarea::placeholder {
+            color: #71717a;
+        }
+
+        .send-button {
+            flex:
+                0 0 44px;
+
+            width: 44px;
+            height: 44px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 12px;
+
+            color: #000;
+
+            background: #fff;
+
+            font-size: 21px;
+
+            transition:
+                transform .2s,
+                opacity .2s;
+        }
+
+        .send-button:hover:not(:disabled) {
+            transform:
+                scale(1.05);
+        }
+
+        .send-button:disabled {
+            opacity: .35;
+
+            cursor: not-allowed;
+        }
+
+        .composer-bottom {
+            display: flex;
+
+            align-items: center;
+
+            justify-content:
+                space-between;
+
+            padding:
+                7px 5px 2px 5px;
+        }
+
+        .web-toggle {
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            color: var(--muted);
+
+            font-size: 12px;
+
+            cursor: pointer;
+
+            user-select: none;
+        }
+
+        .web-toggle input {
+            display: none;
+        }
+
+        .toggle {
+            width: 30px;
+            height: 17px;
+
+            position: relative;
+
+            border-radius: 20px;
+
+            background: #3f3f46;
+
+            transition:
+                background .2s;
+        }
+
+        .toggle::after {
+            content: "";
+
+            position: absolute;
+
+            top: 3px;
+            left: 3px;
+
+            width: 11px;
+            height: 11px;
+
+            border-radius: 50%;
+
+            background: white;
+
+            transition:
+                transform .2s;
+        }
+
+        .web-toggle
+        input:checked
+        + .toggle {
+            background:
+                var(--accent);
+        }
+
+        .web-toggle
+        input:checked
+        + .toggle::after {
+            transform:
+                translateX(13px);
+        }
+
+        .composer-note {
+            color: #52525b;
+
+            font-size: 10px;
+
+            text-align: right;
+        }
+
+        /* =========================
+           MOBILE OVERLAY
+        ========================= */
+
+        .overlay {
+            display: none;
+
+            position: fixed;
+
+            inset: 0;
+
+            background:
+                rgba(0,0,0,.55);
+
+            z-index: 40;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 800px) {
+
+            .sidebar {
+                position: fixed;
+
+                top: 0;
+                bottom: 0;
+                left: 0;
+
+                transform:
+                    translateX(-100%);
+
+                box-shadow:
+                    15px 0 50px
+                    rgba(0,0,0,.35);
+            }
+
+            .sidebar.open {
+                transform:
+                    translateX(0);
+            }
+
+            .sidebar.open
+            + .overlay {
+                display: block;
+            }
+
+            .menu-button {
+                display: grid;
+                place-items: center;
+            }
+
+            .topbar {
+                padding:
+                    0 12px;
+            }
+
+            .messages {
+                padding:
+                    22px 12px 180px;
+            }
+
+            .message {
+                gap: 10px;
+
+                margin-bottom: 25px;
+            }
+
+            .avatar {
+                width: 29px;
+                height: 29px;
+
+                flex-basis: 29px;
+            }
+
+            .message-body {
+                font-size: 14px;
+            }
+
+            .composer-wrap {
+                padding:
+                    8px
+                    8px
+                    calc(
+                        8px +
+                        env(safe-area-inset-bottom)
+                    );
+            }
+
+            .composer {
+                border-radius: 15px;
+            }
+
+            .suggestions {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome {
+                margin-top: 6vh;
+            }
+        }
+
+        @media (max-width: 480px) {
+
+            .welcome h1 {
+                font-size: 32px;
+            }
+
+            .welcome p {
+                font-size: 13px;
+            }
+
+            .composer-note {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app">
+
+        <!-- =========================
+             SIDEBAR
+        ========================== -->
+
+        <aside
+            class="sidebar"
+            id="sidebar"
+        >
+
+            <div class="brand">
+
+                <div class="brand-icon">
+                    Q
+                </div>
+
+                <div class="brand-name">
+                    QntaAI
+                </div>
+
+            </div>
+
+
+            <button
+                class="new-chat"
+                id="newChat"
+                type="button"
+            >
+
+                <span>＋</span>
+
+                <span>
+                    New chat
+                </span>
+
+            </button>
+
+
+            <div class="history-title">
+                Chat history
+            </div>
+
+
+            <div
+                class="history"
+                id="history"
+            ></div>
+
+
+            <div class="sidebar-footer">
+                Where Curiosity &gt; Age begins.
+            </div>
+
+        </aside>
+
+
+        <!-- =========================
+             MOBILE OVERLAY
+        ========================== -->
+
+        <div
+            class="overlay"
+            id="overlay"
+        ></div>
+
+
+        <!-- =========================
+             MAIN APPLICATION
+        ========================== -->
+
+        <main class="main">
+
+
+            <!-- TOP BAR -->
+
+            <header class="topbar">
+
+                <div class="topbar-title">
+
+                    <button
+                        class="menu-button"
+                        id="menuButton"
+                        type="button"
+                        aria-label="Open menu"
+                    >
+                        ☰
+                    </button>
+
+
+                    <span
+                        class="online"
+                        aria-hidden="true"
+                    ></span>
+
+
+                    <span id="chatTitle">
+                        New chat
+                    </span>
+
+                </div>
+
+            </header>
+
+
+            <!-- =========================
+                 MESSAGE AREA
+            ========================== -->
+
+            <section
+                class="messages"
+                id="messages"
+            >
+
+
+                <!-- WELCOME SCREEN -->
+
+                <div
+                    class="welcome"
+                    id="welcome"
+                >
+
+                    <div class="welcome-orb">
+                        Q
+                    </div>
+
+
+                    <h1>
+                        What are you curious about?
+                    </h1>
+
+
+                    <p>
+                        I'm QntaAI — your AI tutor.
+                        Ask me anything and let's
+                        explore it together.
+                    </p>
+
+
+                    <!-- SUGGESTIONS -->
+
+                    <div class="suggestions">
+
+
+                        <button
+                            class="suggestion"
+                            type="button"
+                            data-prompt="Explain quantum computing simply"
+                        >
+                            🧠 Explain something
+                        </button>
+
+
+                        <button
+                            class="suggestion"
+                            type="button"
+                            data-prompt="Give me an interesting science fact"
+                        >
+                            🔬 Interesting science fact
+                        </button>
+
+
+                        <button
+                            class="suggestion"
+                            type="button"
+                            data-prompt="Help me learn Python"
+                        >
+                            💻 Help me learn Python
+                        </button>
+
+
+                        <button
+                            class="suggestion"
+                            type="button"
+                            data-prompt="What are the latest discoveries in space?"
+                        >
+                            🚀 Explore space
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                 MESSAGE COMPOSER
+            ========================== -->
+
+            <div class="composer-wrap">
+
+
+                <div class="composer">
+
+
+                    <!-- INPUT + SEND -->
+
+                    <div class="composer-main">
+
+
+                        <textarea
+                            id="prompt"
+                            rows="1"
+                            maxlength="8000"
+                            placeholder="Message QntaAI..."
+                            aria-label="Message QntaAI"
+                        ></textarea>
+
+
+                        <button
+                            class="send-button"
+                            id="sendButton"
+                            type="button"
+                            aria-label="Send message"
+                            disabled
+                        >
+                            ↑
+                        </button>
+
+                    </div>
+
+
+                    <!-- COMPOSER OPTIONS -->
+
+                    <div class="composer-bottom">
+
+
+                        <label
+                            class="web-toggle"
+                        >
+
+                            <input
+                                type="checkbox"
+                                id="webSearch"
+                            >
+
+
+                            <span
+                                class="toggle"
+                            ></span>
+
+
+                            <span>
+                                Web search
+                            </span>
+
+                        </label>
+
+
+                        <span
+                            class="composer-note"
+                        >
+                            QntaAI can make mistakes.
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+<script>
+"use strict";
+
+/* =========================================================
+   QNTAAI
+   Frontend state + UI
+   ========================================================= */
+
+
+/* =========================
+   DOM REFERENCES
+========================= */
+
+const messagesEl =
+    document.getElementById("messages");
+
+const welcomeEl =
+    document.getElementById("welcome");
+
+const promptEl =
+    document.getElementById("prompt");
+
+const sendButton =
+    document.getElementById("sendButton");
+
+const webSearchEl =
+    document.getElementById("webSearch");
+
+const historyEl =
+    document.getElementById("history");
+
+const newChatButton =
+    document.getElementById("newChat");
+
+const menuButton =
+    document.getElementById("menuButton");
+
+const sidebar =
+    document.getElementById("sidebar");
+
+const overlay =
+    document.getElementById("overlay");
+
+const chatTitle =
+    document.getElementById("chatTitle");
+
+
+/* =========================
+   APPLICATION STATE
+========================= */
+
+let chats = [];
+
+let currentChat = {
+    id: createId(),
+    title: "New chat",
+    messages: []
+};
+
+let isLoading = false;
+
+
+/* =========================
+   ID GENERATOR
+========================= */
+
+function createId() {
+    return (
+        Date.now().toString(36) +
+        Math.random()
+            .toString(36)
+            .slice(2, 8)
+    );
+}
+
+
+/* =========================
+   HTML ESCAPING
+========================= */
+
+function escapeHtml(value) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        String(value ?? "");
+
+    return div.innerHTML;
+}
+
+
+/* =========================
+   SCROLL
+========================= */
+
+function scrollToBottom() {
+
+    requestAnimationFrame(() => {
+
+        messagesEl.scrollTop =
+            messagesEl.scrollHeight;
+
+    });
+}
+
+
+/* =========================
+   SEND BUTTON STATE
+========================= */
+
+function updateSendButton() {
+
+    const hasText =
+        promptEl.value.trim().length > 0;
+
+    sendButton.disabled =
+        !hasText || isLoading;
+}
+
+
+/* =========================
+   TEXTAREA AUTO RESIZE
+========================= */
+
+function autoResize() {
+
+    promptEl.style.height =
+        "auto";
+
+    const height =
+        Math.min(
+            promptEl.scrollHeight,
+            140
+        );
+
+    promptEl.style.height =
+        height + "px";
+}
+
+
+/* =========================================================
+   MESSAGE UI
+   ========================================================= */
+
+function addMessage(
+    role,
+    text,
+    options = {}
+) {
+
+    const message =
+        document.createElement("div");
+
+    message.className =
+        "message " + role;
+
+
+    const avatar =
+        document.createElement("div");
+
+    avatar.className =
+        "avatar " +
+        (
+            role === "user"
+                ? "user"
+                : "ai"
+        );
+
+    avatar.textContent =
+        role === "user"
+            ? "U"
+            : "Q";
+
+
+    const body =
+        document.createElement("div");
+
+    body.className =
+        "message-body";
+
+
+    const roleLabel =
+        document.createElement("div");
+
+    roleLabel.className =
+        "message-role";
+
+    roleLabel.textContent =
+        role === "user"
+            ? "You"
+            : "QntaAI";
+
+
+    const textElement =
+        document.createElement("div");
+
+    textElement.className =
+        "message-text";
+
+    textElement.innerHTML =
+        escapeHtml(text);
+
+
+    body.appendChild(
+        roleLabel
+    );
+
+    body.appendChild(
+        textElement
+    );
+
+
+    if (
+        Array.isArray(options.sources) &&
+        options.sources.length > 0
+    ) {
+
+        addSources(
+            body,
+            options.sources
+        );
+    }
+
+
+    message.appendChild(
+        avatar
+    );
+
+    message.appendChild(
+        body
+    );
+
+
+    messagesEl.appendChild(
+        message
+    );
+
+
+    scrollToBottom();
+
+    return message;
+}
+
+
+/* =========================
+   WEB SOURCES
+========================= */
+
+function addSources(
+    parent,
+    sources
+) {
+
+    const container =
+        document.createElement("div");
+
+    container.className =
+        "sources";
+
+
+    const title =
+        document.createElement("div");
+
+    title.className =
+        "sources-title";
+
+    title.textContent =
+        "Web sources";
+
+
+    container.appendChild(
+        title
+    );
+
+
+    for (
+        const source of sources
+    ) {
+
+        if (!source) {
+            continue;
+        }
+
+
+        const link =
+            document.createElement("a");
+
+        link.className =
+            "source";
+
+
+        link.textContent =
+            source.title ||
+            source.name ||
+            source.url ||
+            "Source";
+
+
+        if (source.url) {
+
+            link.href =
+                source.url;
+
+            link.target =
+                "_blank";
+
+            link.rel =
+                "noopener noreferrer";
+        }
+
+
+        container.appendChild(
+            link
+        );
+    }
+
+
+    parent.appendChild(
+        container
+    );
+}
+
+
+/* =========================================================
+   TYPING INDICATOR
+   ========================================================= */
+
+function addTypingMessage() {
+
+    const message =
+        document.createElement("div");
+
+    message.className =
+        "message ai";
+
+    message.id =
+        "typingMessage";
+
+
+    message.innerHTML = `
+        <div class="avatar ai">Q</div>
+
+        <div class="message-body">
+
+            <div class="message-role">
+                QntaAI
+            </div>
+
+            <div class="typing">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+        </div>
+    `;
+
+
+    messagesEl.appendChild(
+        message
+    );
+
+    scrollToBottom();
+
+    return message;
+}
+
+
+function removeTypingMessage() {
+
+    const typing =
+        document.getElementById(
+            "typingMessage"
+        );
+
+    if (typing) {
+        typing.remove();
+    }
+}
+
+
+/* =========================================================
+   WELCOME SCREEN
+   ========================================================= */
+
+function hideWelcome() {
+
+    const welcome =
+        document.getElementById(
+            "welcome"
+        );
+
+    if (welcome) {
+        welcome.remove();
+    }
+}
+
+
+/* =========================================================
+   SIDEBAR
+   ========================================================= */
+
+function openSidebar() {
+
+    sidebar.classList.add(
+        "open"
+    );
+}
+
+
+function closeSidebar() {
+
+    sidebar.classList.remove(
+        "open"
+    );
+}
+
+
+/* =========================================================
+   LOCAL CHAT STORAGE
+   ========================================================= */
+
+function saveChats() {
+
+    try {
+
+        localStorage.setItem(
+            "qntaai_chats",
+            JSON.stringify(chats)
+        );
+
+    } catch (error) {
+
+        console.warn(
+            "Could not save chat history.",
+            error
+        );
+    }
+}
+
+
+function loadChats() {
+
+    try {
+
+        const saved =
+            localStorage.getItem(
+                "qntaai_chats"
+            );
+
+
+        if (!saved) {
+            return;
+        }
+
+
+        const parsed =
+            JSON.parse(saved);
+
+
+        if (
+            Array.isArray(parsed)
+        ) {
+
+            chats = parsed;
+        }
+
+    } catch (error) {
+
+        console.warn(
+            "Could not load chat history.",
+            error
+        );
+    }
+}
+
+
+/* =========================================================
+   SAVE CURRENT CHAT
+   ========================================================= */
+
+function saveCurrentChat() {
+
+    if (
+        currentChat.messages.length === 0
+    ) {
+        return;
+    }
+
+
+    const index =
+        chats.findIndex(
+            chat =>
+                chat.id ===
+                currentChat.id
+        );
+
+
+    if (index === -1) {
+
+        chats.unshift(
+            structuredClone(
+                currentChat
+            )
+        );
+
+    } else {
+
+        chats[index] =
+            structuredClone(
+                currentChat
+            );
+    }
+
+
+    saveChats();
+
+    renderHistory();
+}
+
+
+/* =========================================================
+   CHAT HISTORY UI
+   ========================================================= */
+
+function renderHistory() {
+
+    historyEl.innerHTML =
+        "";
+
+
+    if (chats.length === 0) {
+
+        const empty =
+            document.createElement(
+                "div"
+            );
+
+        empty.style.padding =
+            "12px 8px";
+
+        empty.style.color =
+            "var(--muted)";
+
+        empty.style.fontSize =
+            "12px";
+
+        empty.textContent =
+            "No conversations yet.";
+
+
+        historyEl.appendChild(
+            empty
+        );
+
+        return;
+    }
+
+
+    for (
+        const chat of chats
+    ) {
+
+        const button =
+            document.createElement(
+                "button"
+            );
+
+        button.type =
+            "button";
+
+        button.className =
+            "history-item";
+
+
+        if (
+            chat.id ===
+            currentChat.id
+        ) {
+
+            button.classList.add(
+                "active"
+            );
+        }
+
+
+        button.innerHTML = `
+            <span>💬</span>
+            <span>
+                ${escapeHtml(
+                    chat.title ||
+                    "New chat"
+                )}
+            </span>
+        `;
+
+
+        button.addEventListener(
+            "click",
+            () => {
+                loadChat(chat.id);
+            }
+        );
+
+
+        historyEl.appendChild(
+            button
+        );
+    }
+}
+
+
+/* =========================================================
+   LOAD CHAT
+   ========================================================= */
+
+function loadChat(chatId) {
+
+    const chat =
+        chats.find(
+            item =>
+                item.id === chatId
+        );
+
+
+    if (!chat) {
+        return;
+    }
+
+
+    currentChat =
+        structuredClone(chat);
+
+
+    chatTitle.textContent =
+        currentChat.title ||
+        "New chat";
+
+
+    messagesEl.innerHTML =
+        "";
+
+
+    for (
+        const message
+        of currentChat.messages
+    ) {
+
+        if (
+            message.role ===
+            "user"
+        ) {
+
+            addMessage(
+                "user",
+                message.content
+            );
+
+        } else if (
+            message.role ===
+            "assistant"
+        ) {
+
+            addMessage(
+                "ai",
+                message.content,
+                {
+                    sources:
+                        message.sources
+                }
+            );
+        }
+    }
+
+
+    renderHistory();
+
+    closeSidebar();
+
+    scrollToBottom();
+}
+
+
+/* =========================================================
+   NEW CHAT
+   ========================================================= */
+
+function startNewChat() {
+
+    saveCurrentChat();
+
+
+    currentChat = {
+        id: createId(),
+        title: "New chat",
+        messages: []
+    };
+
+
+    chatTitle.textContent =
+        "New chat";
+
+
+    messagesEl.innerHTML = `
+
+        <div
+            class="welcome"
+            id="welcome"
+        >
+
+            <div class="welcome-orb">
+                Q
+            </div>
+
+            <h1>
+                What are you curious about?
+            </h1>
+
+            <p>
+                I'm QntaAI — your AI tutor.
+                Ask me anything and let's
+                explore it together.
+            </p>
+
+            <div class="suggestions">
+
+                <button
+                    class="suggestion"
+                    type="button"
+                    data-prompt="Explain quantum computing simply"
+                >
+                    🧠 Explain something
+                </button>
+
+                <button
+                    class="suggestion"
+                    type="button"
+                    data-prompt="Give me an interesting science fact"
+                >
+                    🔬 Interesting science fact
+                </button>
+
+                <button
+                    class="suggestion"
+                    type="button"
+                    data-prompt="Help me learn Python"
+                >
+                    💻 Help me learn Python
+                </button>
+
+                <button
+                    class="suggestion"
+                    type="button"
+                    data-prompt="What are the latest discoveries in space?"
+                >
+                    🚀 Explore space
+                </button>
+
+            </div>
+
+        </div>
+    `;
+
+
+    promptEl.value =
+        "";
+
+
+    autoResize();
+
+    updateSendButton();
+
+    renderHistory();
+
+    closeSidebar();
+
+    promptEl.focus();
+}
+
+
+/* =========================================================
+   EVENT LISTENERS
+   ========================================================= */
+
+promptEl.addEventListener(
+    "input",
+    () => {
+
+        autoResize();
+
+        updateSendButton();
+    }
+);
+
+
+promptEl.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Enter" &&
+            !event.shiftKey
+        ) {
+
+            event.preventDefault();
+
+            if (
+                !sendButton.disabled
+            ) {
+
+                sendMessage();
+            }
+        }
+    }
+);
+
+
+sendButton.addEventListener(
+    "click",
+    sendMessage
+);
+
+
+newChatButton.addEventListener(
+    "click",
+    startNewChat
+);
+
+
+menuButton.addEventListener(
+    "click",
+    openSidebar
+);
+
+
+overlay.addEventListener(
+    "click",
+    closeSidebar
+);
+
+
+/* =========================================================
+   SUGGESTION BUTTONS
+   ========================================================= */
+
+document.addEventListener(
+    "click",
+    event => {
+
+        const button =
+            event.target.closest(
+                ".suggestion"
+            );
+
+
+        if (!button) {
+            return;
+        }
+
+
+        const prompt =
+            button.dataset.prompt;
+
+
+        if (!prompt) {
+            return;
+        }
+
+
+        promptEl.value =
+            prompt;
+
+
+        autoResize();
+
+        updateSendButton();
+
+        promptEl.focus();
+    }
+);
+
+/* =========================================================
+   SEND MESSAGE
+========================================================= */
+
+async function sendMessage() {
+
+    if (isLoading) {
+        return;
+    }
+
+
+    const text =
+        promptEl.value.trim();
+
+
+    if (!text) {
+        return;
+    }
+
+
+    /* =========================
+       PREPARE UI
+    ========================= */
+
+    hideWelcome();
+
+
+    addMessage(
+        "user",
+        text
+    );
+
+
+    currentChat.messages.push({
+        role: "user",
+        content: text
+    });
+
+
+    /* =========================
+       CHAT TITLE
+    ========================= */
+
+    if (
+        currentChat.messages.length === 1
+    ) {
+
+        currentChat.title =
+            text.length > 42
+                ? text.slice(0, 42) + "…"
+                : text;
+
+        chatTitle.textContent =
+            currentChat.title;
+    }
+
+
+    /* =========================
+       CLEAR INPUT
+    ========================= */
+
+    promptEl.value = "";
+
+    autoResize();
+
+    updateSendButton();
+
+
+    /* =========================
+       LOADING STATE
+    ========================= */
+
+    isLoading = true;
+
+    updateSendButton();
+
+    addTypingMessage();
+
+
+    try {
+
+        /* =========================
+           CALL FLASK BACKEND
+        ========================= */
+
+        const response =
+            await fetch(
+                "/api/chat",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        messages:
+                            currentChat.messages,
+
+                        web_search:
+                            webSearchEl.checked
+                    })
+                }
+            );
+
+
+        /* =========================
+           READ RESPONSE
+        ========================= */
+
+        let data = null;
+
+
+        try {
+
+            data =
+                await response.json();
+
+        } catch (jsonError) {
+
+            console.error(
+                "Invalid JSON response:",
+                jsonError
+            );
+        }
+
+
+        removeTypingMessage();
+
+
+        /* =========================
+           SERVER ERROR
+        ========================= */
+
+        if (!response.ok) {
+
+            const errorMessage =
+                data &&
+                data.error
+                    ? data.error
+                    : "QntaAI could not process the request.";
+
+
+            addMessage(
+                "ai",
+                "⚠️ " +
+                errorMessage
+            );
+
+
+            return;
+        }
+
+
+        /* =========================
+           GET AI RESPONSE
+        ========================= */
+
+        const reply =
+            data &&
+            typeof data.reply === "string"
+                ? data.reply
+                : "";
+
+
+        if (!reply) {
+
+            addMessage(
+                "ai",
+                "⚠️ QntaAI returned an empty response."
+            );
+
+
+            return;
+        }
+
+
+        /* =========================
+           SOURCES
+        ========================= */
+
+        const sources =
+            data &&
+            Array.isArray(data.sources)
+                ? data.sources
+                : [];
+
+
+        /* =========================
+           SHOW AI MESSAGE
+        ========================= */
+
+        addMessage(
+            "ai",
+            reply,
+            {
+                sources:
+                    sources
+            }
+        );
+
+
+        /* =========================
+           SAVE AI MESSAGE
+        ========================= */
+
+        currentChat.messages.push({
+            role: "assistant",
+            content: reply,
+            sources: sources
+        });
+
+
+        /* =========================
+           SAVE MEMORY
+        ========================= */
+
+        saveCurrentChat();
+
+
+    } catch (error) {
+
+        console.error(
+            "QntaAI request failed:",
+            error
+        );
+
+
+        removeTypingMessage();
+
+
+        addMessage(
+            "ai",
+            "⚠️ I couldn't connect to the QntaAI server."
+        );
+
+
+    } finally {
+
+        /* =========================
+           RESTORE UI
+        ========================= */
+
+        isLoading = false;
+
+        updateSendButton();
+
+        promptEl.focus();
+
+        scrollToBottom();
+    }
+}
+/* =========================================================
+   CHAT MEMORY HELPERS
+========================================================= */
+
+function clearAllChats() {
+
+    const confirmed =
+        window.confirm(
+            "Delete all saved QntaAI conversations?"
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    chats = [];
+
+
+    try {
+
+        localStorage.removeItem(
+            "qntaai_chats"
+        );
+
+    } catch (error) {
+
+        console.warn(
+            "Could not clear saved chats.",
+            error
+        );
+    }
+
+
+    startNewChat();
+}
+
+
+/* =========================================================
+   KEYBOARD SHORTCUTS
+========================================================= */
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        /*
+         * Ctrl + K / Cmd + K
+         * starts a new conversation.
+         */
+
+        const modifier =
+            event.ctrlKey ||
+            event.metaKey;
+
+
+        if (
+            modifier &&
+            event.key.toLowerCase() === "k"
+        ) {
+
+            event.preventDefault();
+
+            startNewChat();
+
+            return;
+        }
+
+
+        /*
+         * Escape closes the mobile sidebar.
+         */
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            closeSidebar();
+        }
+    }
+);
+
+
+/* =========================================================
+   MOBILE SIDEBAR
+========================================================= */
+
+window.addEventListener(
+    "resize",
+    () => {
+
+        if (
+            window.innerWidth > 800
+        ) {
+
+            closeSidebar();
+        }
+    }
+);
+
+
+/* =========================================================
+   PAGE VISIBILITY
+========================================================= */
+
+document.addEventListener(
+    "visibilitychange",
+    () => {
+
+        if (
+            document.visibilityState ===
+            "hidden"
+        ) {
+
+            saveCurrentChat();
+        }
+    }
+);
+
+
+/* =========================================================
+   BEFORE PAGE CLOSE
+========================================================= */
+
+window.addEventListener(
+    "beforeunload",
+    () => {
+
+        saveCurrentChat();
+    }
+);
+/* =========================================================
+   FINAL INITIALIZATION
+========================================================= */
+
+loadChats();
+
+renderHistory();
+
+autoResize();
+
+updateSendButton();
+
+promptEl.focus();
+
+
+/* =========================================================
+   FINAL SAFETY CHECK
+========================================================= */
+
+window.QntaAI = {
+    getCurrentChat: function () {
+        return currentChat;
+    },
+
+    getChatCount: function () {
+        return chats.length;
+    },
+
+    clearChats: function () {
+        clearAllChats();
+    }
+};
+
+</script>
+
+</body>
+</html>
+
+
+loadChats();
+
+renderHistory();
+
+autoResize();
+
+updateSendButton();
+
+</script>
