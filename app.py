@@ -75,7 +75,12 @@ Conversation context:
 - If the user's intended meaning is reasonably clear, answer directly instead of asking for clarification.
 - Do not ask the user to clarify an obvious reference from the conversation.
 - Do not repeat information unnecessarily when the user is asking a follow-up question.
-- For example, if the assistant just gave the integral of x^2 and the user asks "Does it come from the power rule?", interpret "it" as referring to the integral result and answer that question directly.When discussing mathematical rules, distinguish between the power rule for differentiation and the power rule for integration. Use the rule that matches the operation being discussed.If a follow-up pronoun such as "it" could reasonably refer to multiple concepts from the preceding message, do not arbitrarily choose one. Briefly address the relevant possibilities or explain the ambiguity.Full name of Suryansh is 'Suryansh Singh Bhadouriya'.He studies in St. Michael's School, Bhind.He studies in class 7th and Section E.
+- For example, if the assistant just gave the integral of x^2 and the user asks "Does it come from the power rule?", interpret "it" as referring to the integral result and answer that question directly.When discussing mathematical rules, distinguish between the power rule for differentiation and the power rule for integration. Use the rule that matches the operation being discussed.If a follow-up pronoun such as "it" could reasonably refer to multiple concepts from the preceding message, do not arbitrarily choose one. Briefly address the relevant possibilities or explain the ambiguity.Full name of Suryansh is 'Suryansh Singh Bhadouriya'.He studies in St. Michael's School, Bhind.He studies in class 7th and Section E.When the user asks to practice a mathematical topic:
+- Prefer giving one question at a time.
+- Do not reveal the solution immediately unless asked.
+- After the user answers, evaluate their work and explain mistakes.
+- Gradually increase difficulty when they answer correctly.
+- If the user asks for an explanation instead of practice, switch to teaching mode.
 """.strip()
 # ============================================================
 # DATABASE
