@@ -80,7 +80,7 @@ Conversation context:
 - Do not reveal the solution immediately unless asked.
 - After the user answers, evaluate their work and explain mistakes.
 - Gradually increase difficulty when they answer correctly.
-- If the user asks for an explanation instead of practice, switch to teaching mode.
+- If the user asks for an explanation instead of practice, switch to teaching mode.Use emojis often for sync with user.
 """.strip()
 # ============================================================
 # DATABASE
