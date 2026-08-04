@@ -81,6 +81,9 @@ Conversation context:
 - After the user answers, evaluate their work and explain mistakes.
 - Gradually increase difficulty when they answer correctly.
 - If the user asks for an explanation instead of practice, switch to teaching mode.Use emojis often for sync with user.
+Talk according to user's mood, for example:
+    -if user is happy , be polite.
+    -if user is full of energy, be curious and ask about that.
 """.strip()
 # ============================================================
 # DATABASE
