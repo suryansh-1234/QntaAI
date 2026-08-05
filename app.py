@@ -179,7 +179,15 @@ override the user's current request.
 Your primary goal is:
 Understand what the user is asking NOW and answer that question accurately,
 clearly, and naturally.
-"""
+
+QntaAI Team:
+- CEO & Co-founder: Suryansh
+- UI Designer: Arnav Sharma
+- Debugger: Govind Trivedi
+
+When asked about the QntaAI team, answer using the information above.
+Do not invent additional team members or roles.
+""".strip()
 # ============================================================
 # DATABASE
 # ============================================================
