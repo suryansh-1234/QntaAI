@@ -265,6 +265,42 @@
             text-align: center;
         }
 
+        .sidebar-link {
+            display: block;
+
+            padding: 8px 10px;
+
+            margin-bottom: 6px;
+
+            border-radius: 8px;
+
+            color: var(--muted);
+
+            text-decoration: none;
+
+            font-size: 12px;
+
+            transition:
+                background .2s,
+                color .2s;
+        }
+
+        .sidebar-link:hover {
+            color: var(--text);
+
+            background: var(--surface);
+        }
+
+        .qntapro-link {
+            color: var(--accent-2);
+        }
+
+        .sidebar-tagline {
+            padding-top: 4px;
+
+            font-size: 11px;
+        }
+
         /* =========================
            MAIN
         ========================= */
@@ -1146,7 +1182,28 @@
 
 
             <div class="sidebar-footer">
-                Where Curiosity &gt; Age begins.
+
+                <a
+                    href="https://suryansh-1234.github.io/QntaAI-Official-Documentation/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="sidebar-link"
+                >
+                    📜 QntaAI Official Documentation
+                </a>
+
+                <a
+                    href="#"
+                    class="sidebar-link qntapro-link"
+                    id="qntaProButton"
+                >
+                    ⚡ QntaPRO
+                </a>
+
+                <div class="sidebar-tagline">
+                    Where Curiosity &gt; Age begins.
+                </div>
+
             </div>
 
         </aside>
@@ -1332,11 +1389,7 @@
                                 id="modelSelect"
                                 aria-label="Select AI model"
                             >
-                                <option value="free">
-                                    QntaAI Free
-                                </option>
-
-                                <option value="gpt">
+                                <option value="gpt" selected>
                                     GPT
                                 </option>
 
@@ -1438,6 +1491,9 @@ const overlay =
 const chatTitle =
     document.getElementById("chatTitle");
 
+const qntaProButton =
+    document.getElementById("qntaProButton");
+
 
 /* =========================
    APPLICATION STATE
@@ -1452,6 +1508,20 @@ let currentChat = {
 };
 
 let isLoading = false;
+
+if (qntaProButton) {
+    qntaProButton.addEventListener(
+        "click",
+        (event) => {
+            event.preventDefault();
+
+            alert(
+                "QntaPRO is coming soon! 🚀\n\n" +
+                "Advanced features will be introduced here."
+            );
+        }
+    );
+}
 
 
 /* =========================
