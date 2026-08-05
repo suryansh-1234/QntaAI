@@ -34,8 +34,27 @@ OPENROUTER_URL = (
 
 OPENROUTER_MODEL = os.environ.get(
     "OPENROUTER_MODEL",
-    "openrouter/auto"
+    "openrouter/free"
 )
+
+MODEL_OPTIONS = {
+    "free": "openrouter/free",
+
+    "gpt": os.environ.get(
+        "OPENROUTER_GPT_MODEL",
+        OPENROUTER_MODEL
+    ),
+
+    "gemini": os.environ.get(
+        "OPENROUTER_GEMINI_MODEL",
+        "google/gemini-3.1-flash-lite"
+    ),
+
+    "grok": os.environ.get(
+        "OPENROUTER_GROK_MODEL",
+        "x-ai/grok-4.5"
+    )
+}
 
 APP_URL = os.environ.get(
     "APP_URL",
@@ -497,7 +516,7 @@ def build_web_context(results):
 # OPENROUTER
 # ============================================================
 
-def ask_openrouter(messages):
+def ask_openrouter(messages, model=None):
     if not OPENROUTER_API_KEY:
         raise RuntimeError(
             "OPENROUTER_API_KEY is not configured on the server."
@@ -513,7 +532,7 @@ def ask_openrouter(messages):
     }
 
     payload = {
-        "model": OPENROUTER_MODEL,
+        "model": model or OPENROUTER_MODEL,
         "messages": messages,
         "max_tokens": 5000
     }
@@ -809,6 +828,21 @@ def chat():
     )
 
     # --------------------------------------------------------
+    # Selected AI model
+    # --------------------------------------------------------
+
+    selected_model = clean_text(
+        data.get("model")
+    ).lower()
+
+    if selected_model not in MODEL_OPTIONS:
+        selected_model = "free"
+
+    model_id = MODEL_OPTIONS[
+        selected_model
+    ]
+
+    # --------------------------------------------------------
     # Create conversation if needed
     # --------------------------------------------------------
 
@@ -943,7 +977,8 @@ def chat():
 
     try:
         reply = ask_openrouter(
-            ai_messages
+            ai_messages,
+            model=model_id
         )
 
     except Exception as error:

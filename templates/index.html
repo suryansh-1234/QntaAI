@@ -797,6 +797,37 @@
             cursor: not-allowed;
         }
 
+        .model-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .model-selector label {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .model-selector select {
+            appearance: none;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 6px 28px 6px 9px;
+            background: var(--surface);
+            color: var(--text);
+            font-size: 12px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .model-selector select:hover {
+            border-color: rgba(255,255,255,.18);
+        }
+
+        .model-selector select:focus {
+            border-color: var(--accent);
+        }
+
         .composer-bottom {
             display: flex;
 
@@ -1291,6 +1322,35 @@
 
                     <div class="composer-bottom">
 
+                        <div class="model-selector">
+
+                            <label for="modelSelect">
+                                Model
+                            </label>
+
+                            <select
+                                id="modelSelect"
+                                aria-label="Select AI model"
+                            >
+                                <option value="free">
+                                    QntaAI Free
+                                </option>
+
+                                <option value="gpt">
+                                    GPT
+                                </option>
+
+                                <option value="gemini">
+                                    Gemini
+                                </option>
+
+                                <option value="grok">
+                                    Grok
+                                </option>
+                            </select>
+
+                        </div>
+
 
                         <label
                             class="web-toggle"
@@ -1356,6 +1416,9 @@ const sendButton =
 
 const webSearchEl =
     document.getElementById("webSearch");
+
+const modelSelect =
+    document.getElementById("modelSelect");
 
 const historyEl =
     document.getElementById("history");
@@ -2289,7 +2352,10 @@ async function sendMessage() {
                             currentChat.messages,
 
                         web_search:
-                            webSearchEl.checked
+                            webSearchEl.checked,
+
+                        model:
+                            modelSelect.value
                     })
                 }
             );
