@@ -467,105 +467,105 @@ def update_conversation_title(
 
 def web_search(query):
     try:
-        response = requests.get(
-            "https://api.duckduckgo.com/",
-            params={
-                "q": query,
-                "format": "json",
-                "no_html": 1,
-                "skip_disambig": 1
+        from bs4 import BeautifulSoup
+
+        response = requests.post(
+            "https://html.duckduckgo.com/html/",
+            data={
+                "q": query
             },
             headers={
-                "User-Agent": "QntaAI/1.0"
+                "User-Agent": (
+                    "Mozilla/5.0 "
+                    "(Linux; Android 15) "
+                    "AppleWebKit/537.36 "
+                    "(KHTML, like Gecko) "
+                    "Chrome/131.0 Mobile Safari/537.36"
+                ),
+                "Referer":
+                    "https://html.duckduckgo.com/"
             },
-            timeout=8
+            timeout=10
         )
 
         response.raise_for_status()
 
-        data = response.json()
+        soup = BeautifulSoup(
+            response.text,
+            "html.parser"
+        )
 
         results = []
 
-        abstract = data.get(
-            "AbstractText"
-        )
-
-        if abstract:
-            results.append(
-                {
-                    "title": data.get(
-                        "Heading",
-                        "Web result"
-                    ),
-                    "text": abstract,
-                    "url": data.get(
-                        "AbstractURL",
-                        ""
-                    )
-                }
+        for result in soup.select(
+            ".result"
+        ):
+            link = result.select_one(
+                ".result__a"
             )
 
-        for item in data.get(
-            "RelatedTopics",
-            []
-        ):
-            if not isinstance(item, dict):
+            if not link:
                 continue
 
-            if "Topics" in item:
-                for nested in item["Topics"]:
-                    if (
-                        isinstance(nested, dict)
-                        and nested.get("Text")
-                    ):
-                        results.append(
-                            {
-                                "title": nested.get(
-                                    "Text",
-                                    ""
-                                )[:100],
-                                "text": nested.get(
-                                    "Text",
-                                    ""
-                                ),
-                                "url": nested.get(
-                                    "FirstURL",
-                                    ""
-                                )
-                            }
-                        )
+            title = link.get_text(
+                " ",
+                strip=True
+            )
 
-            elif item.get("Text"):
-                results.append(
-                    {
-                        "title": item.get(
-                            "Text",
-                            ""
-                        )[:100],
-                        "text": item.get(
-                            "Text",
-                            ""
-                        ),
-                        "url": item.get(
-                            "FirstURL",
-                            ""
-                        )
-                    }
+            url = link.get(
+                "href",
+                ""
+            )
+
+            snippet_element = result.select_one(
+                ".result__snippet"
+            )
+
+            snippet = (
+                snippet_element.get_text(
+                    " ",
+                    strip=True
                 )
+                if snippet_element
+                else ""
+            )
+
+            if not title or not url:
+                continue
+
+            results.append(
+                {
+                    "title": title,
+                    "text": snippet,
+                    "url": url
+                }
+            )
 
             if len(results) >= MAX_SEARCH_RESULTS:
                 break
 
-        return results[:MAX_SEARCH_RESULTS]
+        print(
+            "DEBUG web_search results:",
+            repr(results),
+            flush=True
+        )
 
-    except requests.RequestException:
+        return results
+
+    except requests.RequestException as error:
+        print(
+            "Web search request error:",
+            repr(error),
+            flush=True
+        )
         return []
 
-    except ValueError:
-        return []
-
-    except Exception:
+    except Exception as error:
+        print(
+            "Web search error:",
+            repr(error),
+            flush=True
+        )
         return []
 
 
@@ -911,6 +911,14 @@ def chat():
         data.get("web_search")
     )
 
+    print(
+        "DEBUG web_search enabled:",
+        repr(data.get("web_search")),
+        "=>",
+        repr(web_enabled),
+        flush=True
+    )
+
     # --------------------------------------------------------
     # Create conversation if needed
     # --------------------------------------------------------
@@ -1090,6 +1098,12 @@ def chat():
                 )
             }
         )
+
+    print(
+        "DEBUG frontend sources:",
+        repr(sources),
+        flush=True
+    )
 
     # --------------------------------------------------------
     # Return response to index.html
