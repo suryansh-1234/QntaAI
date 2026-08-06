@@ -1365,6 +1365,16 @@
 
 
                         <button
+                            class="mic-button"
+                            id="micButton"
+                            type="button"
+                            aria-label="Voice input"
+                            title="Voice input"
+                        >
+                            🎤
+                        </button>
+
+                        <button
                             class="send-button"
                             id="sendButton"
                             type="button"
@@ -1469,6 +1479,9 @@ const promptEl =
 const sendButton =
     document.getElementById("sendButton");
 
+const micButton =
+    document.getElementById("micButton");
+
 const webSearchEl =
     document.getElementById("webSearch");
 
@@ -1569,6 +1582,111 @@ function scrollToBottom() {
             messagesEl.scrollHeight;
 
     });
+}
+
+
+/* =========================================================
+   SPEECH RECOGNITION
+========================================================= */
+
+const SpeechRecognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+let recognition = null;
+let isListening = false;
+
+if (SpeechRecognition) {
+
+    recognition = new SpeechRecognition();
+
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = "en-US";
+
+    recognition.onstart = function () {
+
+        isListening = true;
+
+        micButton.textContent = "🛑";
+        micButton.classList.add("listening");
+
+    };
+
+    recognition.onresult = function (event) {
+
+        let transcript = "";
+
+        for (
+            let i = event.resultIndex;
+            i < event.results.length;
+            i++
+        ) {
+
+            transcript +=
+                event.results[i][0].transcript;
+        }
+
+        promptEl.value = transcript;
+
+        autoResize();
+        updateSendButton();
+    };
+
+    recognition.onerror = function (event) {
+
+        console.error(
+            "Speech recognition error:",
+            event.error
+        );
+
+        isListening = false;
+
+        micButton.textContent = "🎤";
+        micButton.classList.remove("listening");
+    };
+
+    recognition.onend = function () {
+
+        isListening = false;
+
+        micButton.textContent = "🎤";
+        micButton.classList.remove("listening");
+
+        updateSendButton();
+    };
+
+    micButton.addEventListener(
+        "click",
+        function () {
+
+            if (isListening) {
+
+                recognition.stop();
+
+            } else {
+
+                try {
+
+                    recognition.start();
+
+                } catch (error) {
+
+                    console.error(
+                        "Could not start speech recognition:",
+                        error
+                    );
+                }
+            }
+        }
+    );
+
+} else {
+
+    micButton.disabled = true;
+    micButton.title =
+        "Speech recognition is not supported by this browser.";
+
 }
 
 
