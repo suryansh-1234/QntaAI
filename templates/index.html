@@ -1165,6 +1165,543 @@
         color: #ff6b6b;
     }
 
+
+
+        /* =====================================================
+           QNTAAI SHINY UI v1
+           Visual redesign only — existing JS/HTML preserved.
+        ===================================================== */
+
+        :root {
+            --bg: #f7f8fc;
+            --sidebar: rgba(255,255,255,.86);
+            --surface: #ffffff;
+            --surface-2: #f4f5f9;
+            --border: rgba(20,20,40,.09);
+            --text: #17171c;
+            --muted: #737681;
+            --accent: #6d5dfc;
+            --accent-2: #8b7cff;
+            --user: #f0efff;
+            --max-chat: 850px;
+        }
+
+        html {
+            background: #f7f8fc;
+        }
+
+        body {
+            background:
+                radial-gradient(
+                    circle at 50% -20%,
+                    rgba(124,92,255,.12),
+                    transparent 38%
+                ),
+                linear-gradient(
+                    180deg,
+                    #ffffff 0%,
+                    #f7f8fc 55%,
+                    #f5f6fa 100%
+                );
+
+            color: var(--text);
+        }
+
+        /* =========================
+           SIDEBAR
+        ========================= */
+
+        .sidebar {
+            background:
+                rgba(255,255,255,.78);
+
+            border-right:
+                1px solid rgba(20,20,40,.08);
+
+            box-shadow:
+                8px 0 35px rgba(40,40,80,.04);
+
+            backdrop-filter:
+                blur(22px);
+        }
+
+        .brand-icon {
+            background:
+                linear-gradient(
+                    135deg,
+                    #6d5dfc,
+                    #9b8cff
+                );
+
+            box-shadow:
+                0 8px 24px
+                rgba(109,93,252,.20);
+        }
+
+        .brand-name {
+            color: #18181d;
+        }
+
+        .new-chat {
+            color: var(--text);
+            background: rgba(255,255,255,.65);
+
+            border-color:
+                rgba(20,20,40,.10);
+
+            box-shadow:
+                0 2px 8px rgba(20,20,40,.03);
+        }
+
+        .new-chat:hover {
+            background: #fff;
+
+            border-color:
+                rgba(109,93,252,.20);
+
+            box-shadow:
+                0 5px 18px rgba(40,40,80,.07);
+        }
+
+        .history-item {
+            color: #777983;
+        }
+
+        .history-item:hover,
+        .history-item.active {
+            color: #24242a;
+
+            background:
+                rgba(109,93,252,.07);
+        }
+
+        .sidebar-footer {
+            border-top-color:
+                rgba(20,20,40,.08);
+        }
+
+        .sidebar-link:hover {
+            color: var(--text);
+            background: rgba(109,93,252,.07);
+        }
+
+        /* =========================
+           TOPBAR
+        ========================= */
+
+        .topbar {
+            background:
+                rgba(255,255,255,.72);
+
+            border-bottom:
+                1px solid rgba(20,20,40,.07);
+
+            backdrop-filter:
+                blur(20px);
+        }
+
+        .topbar-title {
+            color: #222228;
+        }
+
+        .menu-button {
+            color: #303039;
+        }
+
+        .menu-button:hover {
+            background:
+                rgba(109,93,252,.08);
+        }
+
+        /* =========================
+           MESSAGES
+        ========================= */
+
+        .avatar.user {
+            color: #555563;
+
+            background:
+                #eeeef3;
+        }
+
+        .avatar.ai {
+            background:
+                linear-gradient(
+                    135deg,
+                    #6d5dfc,
+                    #9b8cff
+                );
+
+            box-shadow:
+                0 5px 15px
+                rgba(109,93,252,.16);
+        }
+
+        .message-body {
+            color: #27272d;
+        }
+
+        .message-role {
+            color: #858691;
+        }
+
+        .message.user .message-body {
+            background:
+                linear-gradient(
+                    135deg,
+                    #f1efff,
+                    #f7f6ff
+                );
+
+            border:
+                1px solid
+                rgba(109,93,252,.08);
+
+            box-shadow:
+                0 3px 12px
+                rgba(50,40,120,.035);
+        }
+
+        .message.user .message-role {
+            color: #656274;
+        }
+
+        /* =========================
+           WELCOME
+        ========================= */
+
+        .welcome {
+            margin-top: 10vh;
+        }
+
+        .welcome-orb {
+            background:
+                linear-gradient(
+                    135deg,
+                    #6d5dfc,
+                    #a394ff
+                );
+
+            box-shadow:
+                0 14px 40px
+                rgba(109,93,252,.20);
+        }
+
+        .welcome h1 {
+            color: #17171c;
+
+            letter-spacing:
+                -2.2px;
+        }
+
+        .welcome p {
+            color: #747680;
+        }
+
+        .suggestion {
+            background:
+                rgba(255,255,255,.82);
+
+            border:
+                1px solid
+                rgba(20,20,40,.08);
+
+            color: #666873;
+
+            box-shadow:
+                0 4px 18px
+                rgba(30,30,60,.035);
+
+            backdrop-filter:
+                blur(12px);
+        }
+
+        .suggestion:hover {
+            color: #282830;
+
+            background:
+                #ffffff;
+
+            border-color:
+                rgba(109,93,252,.16);
+
+            box-shadow:
+                0 9px 25px
+                rgba(40,40,90,.08);
+        }
+
+        /* =========================
+           COMPOSER
+        ========================= */
+
+        .composer-wrap {
+            padding-bottom:
+                calc(
+                    16px +
+                    env(safe-area-inset-bottom)
+                );
+
+            background:
+                linear-gradient(
+                    to top,
+                    rgba(247,248,252,.98) 35%,
+                    rgba(247,248,252,.75) 65%,
+                    rgba(247,248,252,0)
+                );
+        }
+
+        .composer {
+            max-width: 900px;
+
+            padding: 9px;
+
+            background:
+                rgba(255,255,255,.90);
+
+            border:
+                1px solid
+                rgba(20,20,40,.10);
+
+            border-radius: 22px;
+
+            box-shadow:
+                0 12px 45px
+                rgba(30,30,70,.10),
+                0 2px 8px
+                rgba(30,30,70,.04);
+
+            backdrop-filter:
+                blur(24px);
+        }
+
+        .composer:focus-within {
+            border-color:
+                rgba(109,93,252,.22);
+
+            box-shadow:
+                0 14px 48px
+                rgba(40,40,90,.12),
+                0 0 0 3px
+                rgba(109,93,252,.055);
+        }
+
+        .composer textarea {
+            color: #202026;
+        }
+
+        .composer textarea::placeholder {
+            color: #9a9ba4;
+        }
+
+        /* =========================
+           SEND BUTTON
+        ========================= */
+
+        .send-button {
+            color: white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #6d5dfc,
+                    #8b7cff
+                );
+
+            box-shadow:
+                0 6px 18px
+                rgba(109,93,252,.20);
+        }
+
+        .send-button:hover:not(:disabled) {
+            transform:
+                translateY(-1px) scale(1.04);
+
+            box-shadow:
+                0 9px 24px
+                rgba(109,93,252,.27);
+        }
+
+        .send-button:disabled {
+            color: #777983;
+
+            background: #ececf1;
+
+            box-shadow: none;
+        }
+
+        /* =========================
+           MODEL SELECTOR
+        ========================= */
+
+        .model-selector label {
+            color: #7b7c85;
+        }
+
+        .model-selector select {
+            background:
+                #f7f7fa;
+
+            color: #383840;
+
+            border-color:
+                rgba(20,20,40,.09);
+        }
+
+        .model-selector select:hover {
+            border-color:
+                rgba(109,93,252,.18);
+        }
+
+        .model-selector select:focus {
+            border-color:
+                rgba(109,93,252,.45);
+
+            box-shadow:
+                0 0 0 3px
+                rgba(109,93,252,.07);
+        }
+
+        /* =========================
+           WEB SEARCH
+        ========================= */
+
+        .web-toggle {
+            color: #747680;
+        }
+
+        .toggle {
+            background: #d8d8df;
+        }
+
+        .web-toggle input:checked + .toggle {
+            background:
+                linear-gradient(
+                    90deg,
+                    #6d5dfc,
+                    #8b7cff
+                );
+        }
+
+        .composer-note {
+            color: #9b9ca5;
+        }
+
+        /* =========================
+           SOURCES
+        ========================= */
+
+        .sources-title {
+            color: #858691;
+        }
+
+        .source {
+            color: #656772;
+
+            background:
+                rgba(255,255,255,.80);
+
+            border-color:
+                rgba(20,20,40,.08);
+
+            box-shadow:
+                0 3px 12px
+                rgba(30,30,60,.025);
+
+            transition:
+                transform .18s ease,
+                background .18s ease,
+                border-color .18s ease,
+                box-shadow .18s ease;
+        }
+
+        .source:hover {
+            color: #282830;
+
+            background:
+                #ffffff;
+
+            border-color:
+                rgba(109,93,252,.17);
+
+            transform:
+                translateY(-1px);
+
+            box-shadow:
+                0 6px 18px
+                rgba(30,30,70,.07);
+        }
+
+        /* =========================
+           MESSAGE ACTIONS
+        ========================= */
+
+        .message-action {
+            color: #858691;
+
+            background:
+                rgba(255,255,255,.55);
+
+            border-color:
+                rgba(20,20,40,.08);
+        }
+
+        .message-action:hover,
+        .message-action.active {
+            color: #303039;
+
+            background:
+                #ffffff;
+
+            border-color:
+                rgba(109,93,252,.14);
+
+            box-shadow:
+                0 3px 10px
+                rgba(30,30,70,.05);
+        }
+
+        /* =========================
+           SCROLLBARS
+        ========================= */
+
+        .history::-webkit-scrollbar-thumb,
+        .messages::-webkit-scrollbar-thumb {
+            background: #d5d5dc;
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 800px) {
+
+            .sidebar {
+                box-shadow:
+                    18px 0 55px
+                    rgba(30,30,70,.16);
+            }
+
+            .overlay {
+                background:
+                    rgba(30,30,50,.22);
+
+                backdrop-filter:
+                    blur(3px);
+            }
+
+            .composer {
+                border-radius: 19px;
+
+                box-shadow:
+                    0 10px 35px
+                    rgba(30,30,70,.12);
+            }
+        }
+
+
+        /* QNTAAI HOME POSITION */
+        .welcome { margin-top: 5vh; }
+
 </style>
 </head>
 <body>
@@ -1331,45 +1868,7 @@
 
                     <!-- SUGGESTIONS -->
 
-                    <div class="suggestions">
-
-
-                        <button
-                            class="suggestion"
-                            type="button"
-                            data-prompt="Explain quantum computing simply"
-                        >
-                            🧠 Explain something
-                        </button>
-
-
-                        <button
-                            class="suggestion"
-                            type="button"
-                            data-prompt="Give me an interesting science fact"
-                        >
-                            🔬 Interesting science fact
-                        </button>
-
-
-                        <button
-                            class="suggestion"
-                            type="button"
-                            data-prompt="Help me learn Python"
-                        >
-                            💻 Help me learn Python
-                        </button>
-
-
-                        <button
-                            class="suggestion"
-                            type="button"
-                            data-prompt="What are the latest discoveries in space?"
-                        >
-                            🚀 Explore space
-                        </button>
-
-                    </div>
+                    
 
                 </div>
 
