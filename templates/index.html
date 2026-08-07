@@ -981,6 +981,43 @@
                 translateX(13px);
         }
 
+        /* =========================
+           SEARCH STATUS
+        ========================= */
+
+        .search-status {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 8px 3px;
+            color: #71717a;
+            font-size: 12px;
+        }
+
+        .search-status.active {
+            display: flex;
+        }
+
+        .search-status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #8b5cf6;
+            animation: searchPulse 1.2s ease-in-out infinite;
+        }
+
+        @keyframes searchPulse {
+            0%, 100% {
+                opacity: .35;
+                transform: scale(.85);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
         .composer-note {
             color: #52525b;
 
@@ -1924,6 +1961,21 @@
 
                     <!-- COMPOSER OPTIONS -->
 
+                    <div
+                        class="search-status"
+                        id="searchStatus"
+                        aria-live="polite"
+                    >
+                        <span
+                            class="search-status-dot"
+                            aria-hidden="true"
+                        ></span>
+
+                        <span id="searchStatusText">
+                            Searching the web...
+                        </span>
+                    </div>
+
                     <div class="composer-bottom">
 
                         <div class="model-selector">
@@ -2019,6 +2071,12 @@ const micButton =
 
 const webSearchEl =
     document.getElementById("webSearch");
+
+const searchStatus =
+    document.getElementById("searchStatus");
+
+const searchStatusText =
+    document.getElementById("searchStatusText");
 
 const modelSelect =
     document.getElementById("modelSelect");
@@ -3189,6 +3247,25 @@ document.addEventListener(
    SEND MESSAGE
 ========================================================= */
 
+function showSearchStatus(text = "Searching the web...") {
+    if (!searchStatus) {
+        return;
+    }
+
+    searchStatusText.textContent = text;
+    searchStatus.classList.add("active");
+}
+
+
+function hideSearchStatus() {
+    if (!searchStatus) {
+        return;
+    }
+
+    searchStatus.classList.remove("active");
+}
+
+
 async function sendMessage() {
 
     if (isLoading) {
@@ -3260,6 +3337,10 @@ async function sendMessage() {
     isLoading = true;
 
     updateSendButton();
+
+    if (webSearchEl.checked) {
+        showSearchStatus("Searching the web...");
+    }
 
     addTypingMessage();
 
@@ -3442,6 +3523,8 @@ async function sendMessage() {
         /* =========================
            RESTORE UI
         ========================= */
+
+        hideSearchStatus();
 
         isLoading = false;
 
