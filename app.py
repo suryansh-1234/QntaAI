@@ -222,6 +222,22 @@ def init_db():
                 ON DELETE CASCADE
         );
 
+        CREATE TABLE IF NOT EXISTS attachments (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            conversation_id TEXT NOT NULL,
+            filename TEXT NOT NULL,
+            mime_type TEXT,
+            size INTEGER NOT NULL,
+            content TEXT,
+            created_at TEXT NOT NULL,
+            FOREIGN KEY (conversation_id)
+                REFERENCES conversations(id)
+                ON DELETE CASCADE
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_attachments_conversation
+        ON attachments(conversation_id, id);
+
         CREATE INDEX IF NOT EXISTS idx_conversations_user
         ON conversations(user_id, updated_at DESC);
 
