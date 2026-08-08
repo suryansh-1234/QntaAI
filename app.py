@@ -1,4 +1,5 @@
 import os
+import json
 import re
 import sqlite3
 import time
@@ -478,6 +479,52 @@ def update_conversation_title(
     connection.commit()
     connection.close()
 # ============================================================
+# ATTACHMENTS
+# ============================================================
+
+def save_attachment(conversation_id, file):
+    filename = clean_text(file.filename) or "unnamed"
+    mime_type = file.mimetype or "application/octet-stream"
+    raw_content = file.read()
+    size = len(raw_content)
+
+    text_content = None
+
+    try:
+        text_content = raw_content.decode("utf-8")
+    except UnicodeDecodeError:
+        pass
+
+    connection = get_db()
+
+    connection.execute(
+        """
+        INSERT INTO attachments
+        (conversation_id, filename, mime_type, size, content, created_at)
+        VALUES (?, ?, ?, ?, ?, ?)
+        """,
+        (
+            conversation_id,
+            filename,
+            mime_type,
+            size,
+            text_content,
+            now_iso()
+        )
+    )
+
+    connection.commit()
+    connection.close()
+
+    return {
+        "filename": filename,
+        "mime_type": mime_type,
+        "size": size,
+        "content": text_content
+    }
+
+
+# ============================================================
 # WEB SEARCH
 # ============================================================
 
@@ -846,9 +893,14 @@ def chat():
             }
         ), 429
 
-    data = request.get_json(
-        silent=True
-    ) or {}
+    data = request.form.to_dict()
+
+    try:
+        data["messages"] = json.loads(
+            data.get("messages", "[]")
+        )
+    except (TypeError, ValueError):
+        data["messages"] = []
 
     # --------------------------------------------------------
     # Conversation ID
@@ -959,11 +1011,13 @@ def chat():
     # Validate message
     # --------------------------------------------------------
 
-    if not prompt:
+    uploaded_files = request.files.getlist("files")
+
+    if not prompt and not uploaded_files:
         return jsonify(
             {
                 "error":
-                    "Please enter a message."
+                    "Please enter a message or attach a file."
             }
         ), 400
 
@@ -1009,6 +1063,25 @@ def chat():
         "user",
         prompt
     )
+
+    # --------------------------------------------------------
+    # Save uploaded attachments
+    # --------------------------------------------------------
+
+    uploaded_attachments = []
+
+    for uploaded_file in request.files.getlist("files"):
+        if not uploaded_file or not uploaded_file.filename:
+            continue
+
+        attachment = save_attachment(
+            conversation_id,
+            uploaded_file
+        )
+
+        uploaded_attachments.append(
+            attachment
+        )
 
     # --------------------------------------------------------
     # Optional web search
@@ -1063,6 +1136,26 @@ def chat():
     ai_messages.extend(
         history
     )
+
+    if uploaded_attachments:
+        attachment_context = []
+        for attachment in uploaded_attachments:
+            line = (
+                f"Attached file: {attachment["filename"]} "
+                f"({attachment["mime_type"]}, {attachment["size"]} bytes)"
+            )
+            if attachment.get("content"):
+                line += "\\nFile content:\\n" + attachment["content"][:20000]
+            attachment_context.append(line)
+
+        ai_messages.append({
+            "role": "system",
+            "content": (
+                "The user attached the following files. "
+                "Use their metadata and text content when relevant.\\n\\n"
+                + "\\n\\n".join(attachment_context)
+            )
+        })
 
     # --------------------------------------------------------
     # Ask OpenRouter

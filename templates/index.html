@@ -837,6 +837,32 @@
             color: #71717a;
         }
 
+        .attachment-button {
+            flex: 0 0 44px;
+            width: 44px;
+            height: 44px;
+            display: grid;
+            place-items: center;
+            border: 0;
+            border-radius: 12px;
+            color: var(--muted);
+            background: transparent;
+            font-size: 25px;
+            line-height: 1;
+            cursor: pointer;
+            transition: background .2s, color .2s, transform .2s;
+        }
+
+        .attachment-button:hover {
+            color: var(--text);
+            background: var(--surface);
+            transform: scale(1.04);
+        }
+
+        .attachment-button:active {
+            transform: scale(.96);
+        }
+
         .send-button {
             flex:
                 0 0 44px;
@@ -1924,8 +1950,12 @@
 
                     <!-- INPUT + SEND -->
 
+                    <div class="attachment-list" id="attachmentList" hidden></div>
+
                     <div class="composer-main">
 
+
+                        <button type="button" class="attachment-button" id="attachmentButton" title="Attach files" aria-label="Attach files">+</button>
 
                         <textarea
                             id="prompt"
@@ -2062,6 +2092,79 @@ const welcomeEl =
 
 const promptEl =
     document.getElementById("prompt");
+
+const attachmentInput = document.createElement("input");
+attachmentInput.type = "file";
+attachmentInput.multiple = true;
+attachmentInput.accept = ".pdf,.txt,.md,.doc,.docx,.csv,.json,.py,.js,.html,.css,.java,.cpp,.c,.h,.png,.jpg,.jpeg,.webp";
+attachmentInput.style.display = "none";
+document.body.appendChild(attachmentInput);
+
+const attachmentButton = document.getElementById("attachmentButton");
+
+if (attachmentButton) {
+    attachmentButton.addEventListener("click", function () {
+        attachmentInput.click();
+    });
+}
+
+
+let selectedAttachments = [];
+
+function renderAttachments() {
+    const list = document.getElementById("attachmentList");
+
+    if (!list) return;
+
+    list.innerHTML = "";
+
+    if (selectedAttachments.length === 0) {
+        list.hidden = true;
+        return;
+    }
+
+    list.hidden = false;
+
+    selectedAttachments.forEach(function (file, index) {
+        const item = document.createElement("div");
+        item.className = "attachment-item";
+
+        const icon = document.createElement("span");
+        icon.className = "attachment-icon";
+        icon.textContent = "📎";
+
+        const name = document.createElement("span");
+        name.className = "attachment-name";
+        name.textContent = file.name;
+        name.title = file.name;
+
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "attachment-remove";
+        remove.textContent = "×";
+        remove.title = "Remove " + file.name;
+
+        remove.addEventListener("click", function () {
+            selectedAttachments.splice(index, 1);
+            renderAttachments();
+        });
+
+        item.appendChild(icon);
+        item.appendChild(name);
+        item.appendChild(remove);
+        list.appendChild(item);
+    });
+}
+
+attachmentInput.addEventListener("change", function () {
+    const files = Array.from(attachmentInput.files || []);
+
+    selectedAttachments = selectedAttachments.concat(files);
+
+    renderAttachments();
+
+    attachmentInput.value = "";
+});
 
 const sendButton =
     document.getElementById("sendButton");
@@ -3357,24 +3460,35 @@ async function sendMessage() {
                 {
                     method: "POST",
 
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
+                    body: (() => {
+                        const formData = new FormData();
 
-                    body: JSON.stringify({
-                        conversation_id:
-                            currentChat.conversation_id,
+                        formData.append(
+                            "conversation_id",
+                            currentChat.conversation_id || ""
+                        );
 
-                        messages:
-                            currentChat.messages,
+                        formData.append(
+                            "messages",
+                            JSON.stringify(currentChat.messages)
+                        );
 
-                        web_search:
-                            webSearchEl.checked,
+                        formData.append(
+                            "web_search",
+                            webSearchEl.checked ? "true" : "false"
+                        );
 
-                        model:
+                        formData.append(
+                            "model",
                             modelSelect.value
-                    })
+                        );
+
+                        selectedAttachments.forEach(
+                            file => formData.append("files", file)
+                        );
+
+                        return formData;
+                    })()
                 }
             );
 
