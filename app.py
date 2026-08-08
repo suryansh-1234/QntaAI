@@ -247,6 +247,26 @@ def init_db():
         """
     )
 
+    # --------------------------------------------------------
+    # DATABASE MIGRATIONS
+    # --------------------------------------------------------
+
+    columns = [
+        row[1]
+        for row in connection.execute(
+            "PRAGMA table_info(conversations)"
+        ).fetchall()
+    ]
+
+    if "client_id" not in columns:
+        connection.execute(
+            "ALTER TABLE conversations ADD COLUMN client_id TEXT"
+        )
+        print(
+            "✅ Database migration: added client_id",
+            flush=True
+        )
+
     connection.commit()
     connection.close()
 
