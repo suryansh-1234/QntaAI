@@ -260,6 +260,12 @@ def get_user_id():
     if "user_id" not in session:
         session["user_id"] = uuid.uuid4().hex
 
+    print(
+        "DEBUG USER ID:",
+        session["user_id"],
+        flush=True
+    )
+
     return session["user_id"]
 
 
@@ -318,6 +324,7 @@ def clean_text(value):
 
 def create_conversation(
     user_id,
+    client_id,
     title="New chat"
 ):
     conversation_id = uuid.uuid4().hex
@@ -328,15 +335,16 @@ def create_conversation(
     connection.execute(
         """
         INSERT INTO conversations
-        (id, user_id, title, created_at, updated_at)
-        VALUES (?, ?, ?, ?, ?)
+        (id, user_id, title, created_at, updated_at, client_id)
+        VALUES (?, ?, ?, ?, ?, ?)
         """,
         (
             conversation_id,
             user_id,
             title,
             timestamp,
-            timestamp
+            timestamp,
+            client_id
         )
     )
 
@@ -348,21 +356,40 @@ def create_conversation(
 
 def conversation_belongs_to_user(
     conversation_id,
-    user_id
+    user_id,
+    client_id=None
 ):
     connection = get_db()
 
-    row = connection.execute(
-        """
-        SELECT id
-        FROM conversations
-        WHERE id = ? AND user_id = ?
-        """,
-        (
-            conversation_id,
-            user_id
-        )
-    ).fetchone()
+    if client_id:
+        row = connection.execute(
+            """
+            SELECT id
+            FROM conversations
+            WHERE id = ?
+              AND (
+                  user_id = ?
+                  OR client_id = ?
+              )
+            """,
+            (
+                conversation_id,
+                user_id,
+                client_id
+            )
+        ).fetchone()
+    else:
+        row = connection.execute(
+            """
+            SELECT id
+            FROM conversations
+            WHERE id = ? AND user_id = ?
+            """,
+            (
+                conversation_id,
+                user_id
+            )
+        ).fetchone()
 
     connection.close()
 
@@ -808,7 +835,8 @@ def conversation(conversation_id):
 
     if not conversation_belongs_to_user(
         conversation_id,
-        user_id
+        user_id,
+        client_id
     ):
         return jsonify(
             {
@@ -910,6 +938,10 @@ def chat():
         data.get("conversation_id")
     )
 
+    client_id = clean_text(
+        data.get("client_id")
+    )
+
     # --------------------------------------------------------
     # Get message from the old frontend format
     # --------------------------------------------------------
@@ -975,8 +1007,15 @@ def chat():
     # Web search
     # --------------------------------------------------------
 
-    web_enabled = bool(
+    web_search_value = clean_text(
         data.get("web_search")
+    ).lower()
+
+    web_enabled = web_search_value in (
+        "true",
+        "1",
+        "yes",
+        "on"
     )
 
     print(
@@ -993,7 +1032,8 @@ def chat():
 
     if not conversation_id:
         conversation_id = create_conversation(
-            user_id
+            user_id,
+            client_id
         )
 
     if not conversation_belongs_to_user(

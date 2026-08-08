@@ -2968,6 +2968,18 @@ function loadChats() {
    SAVE CURRENT CHAT
    ========================================================= */
 
+function getClientId() {
+    let clientId = localStorage.getItem("qntaai_client_id");
+
+    if (!clientId) {
+        clientId = crypto.randomUUID();
+        localStorage.setItem("qntaai_client_id", clientId);
+    }
+
+    return clientId;
+}
+
+
 function saveCurrentChat() {
 
     if (
@@ -3466,6 +3478,11 @@ async function sendMessage() {
                         formData.append(
                             "conversation_id",
                             currentChat.conversation_id || ""
+                        );
+
+                        formData.append(
+                            "client_id",
+                            getClientId()
                         );
 
                         formData.append(
