@@ -2034,26 +2034,37 @@
                         </div>
 
 
-                        <label
-                            class="web-toggle"
-                        >
-
-                            <input
-                                type="checkbox"
-                                id="webSearch"
-                            >
-
-
-                            <span
-                                class="toggle"
-                            ></span>
-
-
-                            <span>
-                                Web search
-                            </span>
-
-                        </label>
+                        <div
+    class="search-mode-control"
+    style="
+        display:flex;
+        align-items:center;
+        gap:8px;
+    "
+>
+    <select
+        id="searchMode"
+        aria-label="Search mode"
+        style="
+            appearance:none;
+            -webkit-appearance:none;
+            border:1px solid rgba(255,255,255,.14);
+            background:rgba(255,255,255,.07);
+            color:inherit;
+            border-radius:999px;
+            padding:7px 30px 7px 12px;
+            font:inherit;
+            font-size:13px;
+            outline:none;
+            cursor:pointer;
+            box-shadow:0 4px 18px rgba(0,0,0,.12);
+        "
+    >
+        <option value="quick">⚡ Quick</option>
+        <option value="search">🔎 Search</option>
+        <option value="research">🧠 Research</option>
+    </select>
+</div>
 
 
                         <span
@@ -2172,8 +2183,8 @@ const sendButton =
 const micButton =
     document.getElementById("micButton");
 
-const webSearchEl =
-    document.getElementById("webSearch");
+const searchModeEl =
+    document.getElementById("searchMode");
 
 const searchStatus =
     document.getElementById("searchStatus");
@@ -3457,9 +3468,21 @@ async function sendMessage() {
 
     updateSendButton();
 
-    if (webSearchEl.checked) {
-        showSearchStatus("Searching the web...");
-    }
+    const selectedSearchMode =
+    searchModeEl
+        ? searchModeEl.value
+        : "quick";
+
+if (
+    selectedSearchMode === "search" ||
+    selectedSearchMode === "research"
+) {
+    showSearchStatus(
+        selectedSearchMode === "research"
+            ? "Researching the web..."
+            : "Searching the web..."
+    );
+}
 
     addTypingMessage();
 
@@ -3495,9 +3518,11 @@ async function sendMessage() {
                         );
 
                         formData.append(
-                            "web_search",
-                            webSearchEl.checked ? "true" : "false"
-                        );
+    "mode",
+    searchModeEl
+        ? searchModeEl.value
+        : "quick"
+);
 
                         formData.append(
                             "model",

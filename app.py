@@ -575,14 +575,110 @@ def save_attachment(conversation_id, file):
 # WEB SEARCH
 # ============================================================
 
+def should_search_web(prompt):
+    """
+    Decide whether the user's message actually requires
+    current/external web information.
+    """
+
+    if not isinstance(prompt, str):
+        return False
+
+    text = prompt.strip().lower()
+
+    if not text:
+        return False
+
+    search_phrases = (
+        "today",
+        "today's",
+        "latest",
+        "current",
+        "currently",
+        "recent",
+        "recently",
+        "news",
+        "headlines",
+        "breaking news",
+        "this week",
+        "this month",
+        "right now",
+        "at the moment",
+        "what happened",
+        "who is the current",
+        "look up",
+        "search the web",
+        "search online",
+        "fetch headlines",
+    )
+
+    return any(
+        phrase in text
+        for phrase in search_phrases
+    )
+
+
 def web_search(query):
+    """
+    Search DuckDuckGo and return relevant web results.
+
+    For freshness-sensitive queries such as "today's news",
+    "latest", or "current", add freshness hints to the search
+    query so the search engine has a better chance of returning
+    recent articles instead of old topic pages.
+    """
+
     try:
         from bs4 import BeautifulSoup
+
+        if not isinstance(query, str):
+            return []
+
+        query = query.strip()
+
+        if not query:
+            return []
+
+        original_query = query
+        lowered = query.lower()
+
+        freshness_terms = (
+            "today",
+            "today's",
+            "latest",
+            "current",
+            "currently",
+            "recent",
+            "recently",
+            "breaking",
+            "headlines",
+            "this week",
+        )
+
+        freshness_requested = any(
+            term in lowered
+            for term in freshness_terms
+        )
+
+        search_query = query
+
+        if freshness_requested:
+            search_query = (
+                query
+                + " latest news"
+                + " 2026"
+            )
+
+        print(
+            "DEBUG actual search query:",
+            repr(search_query),
+            flush=True
+        )
 
         response = requests.post(
             "https://html.duckduckgo.com/html/",
             data={
-                "q": query
+                "q": search_query
             },
             headers={
                 "User-Agent": (
@@ -607,9 +703,8 @@ def web_search(query):
 
         results = []
 
-        for result in soup.select(
-            ".result"
-        ):
+        for result in soup.select(".result"):
+
             link = result.select_one(
                 ".result__a"
             )
@@ -655,6 +750,12 @@ def web_search(query):
                 break
 
         print(
+            "DEBUG web_search original query:",
+            repr(original_query),
+            flush=True
+        )
+
+        print(
             "DEBUG web_search results:",
             repr(results),
             flush=True
@@ -677,7 +778,6 @@ def web_search(query):
             flush=True
         )
         return []
-
 
 def build_web_context(results):
     if not results:
@@ -1022,29 +1122,37 @@ def chat():
             ):
                 prompt = content
                 break
-
     # --------------------------------------------------------
-    # Web search
+    # Search mode
     # --------------------------------------------------------
 
-    web_search_value = clean_text(
-        data.get("web_search")
+    search_mode = clean_text(
+        data.get("mode") or "quick"
     ).lower()
 
-    web_enabled = web_search_value in (
-        "true",
-        "1",
-        "yes",
-        "on"
+    if search_mode not in (
+        "quick",
+        "search",
+        "research"
+    ):
+        search_mode = "quick"
+
+    # Quick keeps QntaAI's automatic search decision.
+    #
+    # Search and Research explicitly enable searching.
+    web_enabled = search_mode in (
+        "search",
+        "research"
     )
 
     print(
-        "DEBUG web_search enabled:",
-        repr(data.get("web_search")),
-        "=>",
+        "DEBUG search mode:",
+        repr(search_mode),
+        "web_enabled:",
         repr(web_enabled),
         flush=True
     )
+
 
     # --------------------------------------------------------
     # Create conversation if needed
@@ -1146,13 +1254,41 @@ def chat():
     # --------------------------------------------------------
     # Optional web search
     # --------------------------------------------------------
-
     web_results = []
 
-    if web_enabled:
+    if search_mode == "quick":
+
+        # Existing automatic search behaviour.
+        search_requested = should_search_web(
+            prompt
+        )
+
+    elif search_mode == "search":
+
+        # Explicit web search.
+        search_requested = True
+
+    else:
+
+        # Research v1.
+        # The deeper research engine comes later.
+        search_requested = True
+
+    print(
+        "DEBUG search decision:",
+        repr(prompt),
+        "mode:",
+        repr(search_mode),
+        "=>",
+        repr(search_requested),
+        flush=True
+    )
+
+    if search_requested:
         web_results = web_search(
             prompt
         )
+
 
     # --------------------------------------------------------
     # Build AI conversation
