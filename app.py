@@ -182,7 +182,7 @@ Your primary goal is:
 Understand what the user is asking NOW and answer that question accurately,
 clearly, and naturally.
 
-QntaAI Team:
+QntaAI Team: 
 - CEO & Founder : Suryansh
 - Co-founder : Govind trivedi
 - UI Designer: Arnav Sharma
@@ -1446,4 +1446,4 @@ if __name__ == "__main__":
         port=port,
         debug=True
     )
-   
+    
