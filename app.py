@@ -699,6 +699,42 @@ def web_search(query):
 
         response.raise_for_status()
 
+        print(
+            "DEBUG DDG status:",
+            response.status_code,
+            flush=True
+        )
+
+        print(
+            "DEBUG DDG bytes:",
+            len(response.text),
+            flush=True
+        )
+
+        debug_soup = BeautifulSoup(
+            response.text,
+            "html.parser"
+        )
+
+        print(
+            "DEBUG DDG title:",
+            (
+                debug_soup.title.get_text(
+                    " ",
+                    strip=True
+                )
+                if debug_soup.title
+                else "NO TITLE"
+            ),
+            flush=True
+        )
+
+        print(
+            "DEBUG DDG result count:",
+            len(debug_soup.select(".result")),
+            flush=True
+        )
+
         soup = BeautifulSoup(
             response.text,
             "html.parser"
