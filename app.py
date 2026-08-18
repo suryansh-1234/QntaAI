@@ -623,17 +623,13 @@ def should_search_web(prompt):
 
 def web_search(query):
     """
-    Search DuckDuckGo and return relevant web results.
+    Search the web using Serper and return normalized results.
 
     For freshness-sensitive queries such as "today's news",
-    "latest", or "current", add freshness hints to the search
-    query so the search engine has a better chance of returning
-    recent articles instead of old topic pages.
+    "latest", or "current", add freshness hints to the query.
     """
 
     try:
-        from bs4 import BeautifulSoup
-
         if not isinstance(query, str):
             return []
 
@@ -678,100 +674,67 @@ def web_search(query):
             flush=True
         )
 
+        api_key = os.environ.get(
+            "SERPER_API_KEY"
+        )
+
+        if not api_key:
+            print(
+                "ERROR SERPER_API_KEY is not configured",
+                flush=True
+            )
+            return []
+
         response = requests.post(
-            "https://html.duckduckgo.com/html/",
-            data={
-                "q": search_query
-            },
+            "https://google.serper.dev/search",
             headers={
-                "User-Agent": (
-                    "Mozilla/5.0 "
-                    "(Linux; Android 15) "
-                    "AppleWebKit/537.36 "
-                    "(KHTML, like Gecko) "
-                    "Chrome/131.0 Mobile Safari/537.36"
-                ),
-                "Referer":
-                    "https://html.duckduckgo.com/"
+                "X-API-KEY": api_key,
+                "Content-Type": "application/json"
+            },
+            json={
+                "q": search_query
             },
             timeout=10
         )
 
-        response.raise_for_status()
-
         print(
-            "DEBUG DDG status:",
+            "DEBUG Serper status:",
             response.status_code,
             flush=True
         )
 
-        print(
-            "DEBUG DDG bytes:",
-            len(response.text),
-            flush=True
-        )
+        response.raise_for_status()
 
-        debug_soup = BeautifulSoup(
-            response.text,
-            "html.parser"
-        )
+        data = response.json()
 
-        print(
-            "DEBUG DDG title:",
-            (
-                debug_soup.title.get_text(
-                    " ",
-                    strip=True
-                )
-                if debug_soup.title
-                else "NO TITLE"
-            ),
-            flush=True
+        organic_results = data.get(
+            "organic",
+            []
         )
 
         print(
-            "DEBUG DDG result count:",
-            len(debug_soup.select(".result")),
+            "DEBUG Serper result count:",
+            len(organic_results),
             flush=True
-        )
-
-        soup = BeautifulSoup(
-            response.text,
-            "html.parser"
         )
 
         results = []
 
-        for result in soup.select(".result"):
+        for result in organic_results:
 
-            link = result.select_one(
-                ".result__a"
-            )
-
-            if not link:
-                continue
-
-            title = link.get_text(
-                " ",
-                strip=True
-            )
-
-            url = link.get(
-                "href",
+            title = result.get(
+                "title",
                 ""
             )
 
-            snippet_element = result.select_one(
-                ".result__snippet"
+            url = result.get(
+                "link",
+                ""
             )
 
-            snippet = (
-                snippet_element.get_text(
-                    " ",
-                    strip=True
-                )
-                if snippet_element
-                else ""
+            snippet = result.get(
+                "snippet",
+                ""
             )
 
             if not title or not url:
@@ -804,7 +767,7 @@ def web_search(query):
 
     except requests.RequestException as error:
         print(
-            "Web search request error:",
+            "Serper request error:",
             repr(error),
             flush=True
         )
@@ -812,11 +775,12 @@ def web_search(query):
 
     except Exception as error:
         print(
-            "Web search error:",
+            "Serper search error:",
             repr(error),
             flush=True
         )
         return []
+
 
 def build_web_context(results):
     if not results:
