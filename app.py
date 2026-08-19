@@ -871,12 +871,7 @@ def ask_openrouter(messages):
         )
 
     data = response.json()
-    print(
-    "DEBUG OPENROUTER RAW RESPONSE:",
-    json.dumps(data, indent=2),
-    flush=True
-)
-
+    
     choices = data.get(
         "choices",
         []
