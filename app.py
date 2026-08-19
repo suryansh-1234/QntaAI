@@ -831,7 +831,7 @@ def ask_openrouter(messages):
     payload = {
         "model": OPENROUTER_MODEL,
         "messages": messages,
-        "max_tokens": 500
+        "max_tokens": 50
     }
 
     response = requests.post(
