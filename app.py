@@ -623,13 +623,17 @@ def should_search_web(prompt):
 
 def web_search(query):
     """
-    Search the web using Serper and return normalized results.
+    Search DuckDuckGo and return relevant web results.
 
     For freshness-sensitive queries such as "today's news",
-    "latest", or "current", add freshness hints to the query.
+    "latest", or "current", add freshness hints to the search
+    query so the search engine has a better chance of returning
+    recent articles instead of old topic pages.
     """
 
     try:
+        from bs4 import BeautifulSoup
+
         if not isinstance(query, str):
             return []
 
@@ -674,67 +678,64 @@ def web_search(query):
             flush=True
         )
 
-        api_key = os.environ.get(
-            "SERPER_API_KEY"
-        )
-
-        if not api_key:
-            print(
-                "ERROR SERPER_API_KEY is not configured",
-                flush=True
-            )
-            return []
-
         response = requests.post(
-            "https://google.serper.dev/search",
-            headers={
-                "X-API-KEY": api_key,
-                "Content-Type": "application/json"
-            },
-            json={
+            "https://html.duckduckgo.com/html/",
+            data={
                 "q": search_query
+            },
+            headers={
+                "User-Agent": (
+                    "Mozilla/5.0 "
+                    "(Linux; Android 15) "
+                    "AppleWebKit/537.36 "
+                    "(KHTML, like Gecko) "
+                    "Chrome/131.0 Mobile Safari/537.36"
+                ),
+                "Referer":
+                    "https://html.duckduckgo.com/"
             },
             timeout=10
         )
 
-        print(
-            "DEBUG Serper status:",
-            response.status_code,
-            flush=True
-        )
-
         response.raise_for_status()
 
-        data = response.json()
-
-        organic_results = data.get(
-            "organic",
-            []
-        )
-
-        print(
-            "DEBUG Serper result count:",
-            len(organic_results),
-            flush=True
+        soup = BeautifulSoup(
+            response.text,
+            "html.parser"
         )
 
         results = []
 
-        for result in organic_results:
+        for result in soup.select(".result"):
 
-            title = result.get(
-                "title",
+            link = result.select_one(
+                ".result__a"
+            )
+
+            if not link:
+                continue
+
+            title = link.get_text(
+                " ",
+                strip=True
+            )
+
+            url = link.get(
+                "href",
                 ""
             )
 
-            url = result.get(
-                "link",
-                ""
+            snippet_element = result.select_one(
+                ".result__snippet"
             )
 
-            snippet = result.get(
-                "snippet",
-                ""
+            snippet = (
+                snippet_element.get_text(
+                    " ",
+                    strip=True
+                )
+                if snippet_element
+                else ""
             )
 
             if not title or not url:
@@ -767,7 +768,7 @@ def web_search(query):
 
     except requests.RequestException as error:
         print(
-            "Serper request error:",
+            "Web search request error:",
             repr(error),
             flush=True
         )
@@ -775,12 +776,11 @@ def web_search(query):
 
     except Exception as error:
         print(
-            "Serper search error:",
+            "Web search error:",
             repr(error),
             flush=True
         )
         return []
-
 
 def build_web_context(results):
     if not results:
@@ -831,7 +831,7 @@ def ask_openrouter(messages):
     payload = {
         "model": OPENROUTER_MODEL,
         "messages": messages,
-        "max_tokens": 5000
+        "max_tokens": 800
     }
 
     response = requests.post(
