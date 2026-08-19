@@ -831,50 +831,14 @@ def ask_openrouter(messages):
     payload = {
         "model": OPENROUTER_MODEL,
         "messages": messages,
-        "max_tokens": 500
+        "max_tokens": 50
     }
 
-    print(
-        "DEBUG OpenRouter model:",
-        OPENROUTER_MODEL,
-        flush=True
-    )
-
-    print(
-        "DEBUG OpenRouter message count:",
-        len(messages),
-        flush=True
-    )
-
-    try:
-        response = requests.post(
-            OPENROUTER_URL,
-            headers=headers,
-            json=payload,
-            timeout=90
-        )
-
-    except requests.RequestException as error:
-        print(
-            "DEBUG OpenRouter request exception:",
-            repr(error),
-            flush=True
-        )
-
-        raise RuntimeError(
-            "Could not connect to OpenRouter."
-        ) from error
-
-    print(
-        "DEBUG OpenRouter HTTP status:",
-        response.status_code,
-        flush=True
-    )
-
-    print(
-        "DEBUG OpenRouter response bytes:",
-        len(response.content),
-        flush=True
+    response = requests.post(
+        OPENROUTER_URL,
+        headers=headers,
+        json=payload,
+        timeout=90
     )
 
     if response.status_code != 200:
@@ -898,12 +862,6 @@ def ask_openrouter(messages):
             "message"
         )
 
-        print(
-            "DEBUG OpenRouter error message:",
-            repr(message),
-            flush=True
-        )
-
         raise RuntimeError(
             message
             or (
@@ -912,34 +870,11 @@ def ask_openrouter(messages):
             )
         )
 
-    try:
-        data = response.json()
-
-    except ValueError as error:
-        print(
-            "DEBUG OpenRouter returned invalid JSON",
-            flush=True
-        )
-
-        raise RuntimeError(
-            "OpenRouter returned invalid JSON."
-        ) from error
-
-    print(
-        "DEBUG OpenRouter response keys:",
-        list(data.keys()),
-        flush=True
-    )
-
+    data = response.json()
+    
     choices = data.get(
         "choices",
         []
-    )
-
-    print(
-        "DEBUG OpenRouter choices:",
-        len(choices),
-        flush=True
     )
 
     if not choices:
@@ -947,71 +882,18 @@ def ask_openrouter(messages):
             "OpenRouter returned no response choices."
         )
 
-    first_choice = choices[0]
-
-    print(
-        "DEBUG OpenRouter choice keys:",
-        list(first_choice.keys()),
-        flush=True
-    )
-
-    message_object = first_choice.get(
-        "message",
-        {}
-    )
-
-    if not isinstance(
-        message_object,
-        dict
-    ):
-        message_object = {}
-
-    print(
-        "DEBUG OpenRouter message keys:",
-        list(message_object.keys()),
-        flush=True
-    )
-
-    content = message_object.get(
-        "content"
-    )
-
-    print(
-        "DEBUG OpenRouter content type:",
-        type(content).__name__,
-        flush=True
-    )
-
-    print(
-        "DEBUG OpenRouter content length:",
-        len(content)
-        if isinstance(content, str)
-        else 0,
-        flush=True
-    )
-
-    print(
-        "DEBUG OpenRouter finish reason:",
-        repr(first_choice.get("finish_reason")),
-        flush=True
+    content = (
+        choices[0]
+        .get("message", {})
+        .get("content")
     )
 
     if not content:
-        print(
-            "DEBUG OpenRouter reasoning present:",
-            bool(
-                message_object.get("reasoning")
-                or message_object.get("reasoning_details")
-            ),
-            flush=True
-        )
-
         raise RuntimeError(
-            "OpenRouter returned an empty text response."
+            "QntaAI received an empty response."
         )
 
     return content
-
 # ============================================================
 # FLASK ROUTES
 # ============================================================
@@ -1103,7 +985,8 @@ def delete_conversation(conversation_id):
 
     if not conversation_belongs_to_user(
         conversation_id,
-        user_id
+        user_id,
+        client_id
     ):
         return jsonify(
             {
