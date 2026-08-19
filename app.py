@@ -190,7 +190,7 @@ QntaAI Team:
 - Advertiser: Shourya Sharma
 
 When asked about the QntaAI team, answer using the information above.
-Do not invent additional team members or roles.
+Do not invent additional team members or roles.All team members study in same Grade/class.
 """.strip()
 # ============================================================
 # DATABASE
