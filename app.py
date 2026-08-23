@@ -735,29 +735,27 @@ def ask_openrouter(messages):
         )
 
     headers = {
-        "Authorization": (
-            f"Bearer {OPENROUTER_API_KEY}"
-        ),
+        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
         "Content-Type": "application/json",
         "HTTP-Referer": APP_URL,
-        "X-Title": APP_TITLE
+        "X-Title": APP_TITLE,
     }
 
     payload = {
         "model": "openrouter/free",
         "messages": messages,
-        "max_tokens": 5000
+        "max_tokens": 5000,
     }
-    
+
     print(
-    "DEBUG TOTAL MESSAGE COUNT:",
-    len(messages),
-    flush=True
-)
+        "DEBUG TOTAL MESSAGE COUNT:",
+        len(messages),
+        flush=True,
+    )
 
     for i, message in enumerate(messages):
         content = message.get("content", "")
-    
+
         print(
             f"DEBUG MESSAGE {i}:",
             "role=",
@@ -766,45 +764,51 @@ def ask_openrouter(messages):
             len(content),
             "words=",
             len(content.split()),
-            flush=True
+            flush=True,
         )
-    
+
     print(
         "DEBUG TOTAL CHARS:",
         sum(
             len(message.get("content", ""))
             for message in messages
         ),
-        flush=True
+        flush=True,
     )
-    
+
     response = requests.post(
         OPENROUTER_URL,
         headers=headers,
         json=payload,
-        timeout=90
+        timeout=90,
+    )
+
+    print(
+        "DEBUG OPENROUTER HTTP STATUS:",
+        response.status_code,
+        flush=True,
     )
 
     if response.status_code != 200:
         try:
             error_data = response.json()
         except ValueError:
-            error_data = {}
+            error_data = {
+                "raw_response": response.text
+            }
 
-        error_object = error_data.get(
-            "error",
-            {}
+        print(
+            "DEBUG OPENROUTER ERROR:",
+            repr(error_data),
+            flush=True,
         )
 
-        if not isinstance(
-            error_object,
-            dict
-        ):
+        error_object = error_data.get("error", {})
+
+        if not isinstance(error_object, dict):
             error_object = {}
 
-        message = error_object.get(
-            "message"
-        )
+        message = error_object.get("message")
 
         raise RuntimeError(
             message
@@ -814,27 +818,66 @@ def ask_openrouter(messages):
             )
         )
 
-    data = response.json()
-    print("DEBUG STATUS:", response.status_code, flush=True)
-    print("DEBUG OpenRouter response:", repr(data), flush=True)
-    
-    content = (
-        choices[0]
-        .get("message", {})
-        .get("content")
+    try:
+        data = response.json()
+    except ValueError:
+        raise RuntimeError(
+            "OpenRouter returned invalid JSON: "
+            + repr(response.text)
+        )
+
+    print(
+        "DEBUG OPENROUTER RESPONSE:",
+        repr(data),
+        flush=True,
     )
+
+    choices = data.get("choices", [])
+
+    if not isinstance(choices, list) or not choices:
+        raise RuntimeError(
+            "OpenRouter returned no choices: "
+            + repr(data)
+        )
+
+    first_choice = choices[0]
+
+    if not isinstance(first_choice, dict):
+        raise RuntimeError(
+            "OpenRouter returned an invalid choice: "
+            + repr(first_choice)
+        )
+
+    message_data = first_choice.get("message", {})
+
+    if not isinstance(message_data, dict):
+        raise RuntimeError(
+            "OpenRouter returned an invalid message: "
+            + repr(message_data)
+        )
+
+    content = message_data.get("content")
+
+    if content is None:
+        raise RuntimeError(
+            "QntaAI received no content from OpenRouter: "
+            + repr(data)
+        )
+
+    if not isinstance(content, str):
+        content = str(content)
+
+    content = content.strip()
 
     if not content:
         raise RuntimeError(
-            "QntaAI received an empty response."
+            "QntaAI received an empty response from OpenRouter: "
+            + repr(data)
         )
 
     return content
-# ============================================================
-# FLASK ROUTES
-# ============================================================
 
-@app.get("/")
+
 def index():
     return render_template("index.html")
 
