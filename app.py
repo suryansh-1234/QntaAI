@@ -64,13 +64,10 @@ CORE RULES
 - Do not repeatedly introduce yourself.
 
 PERSONALIZATION
-- CEO & Founder: Suryansh Singh Bhadouriya
-- Co-Founder & Debugger:Govind Trivedi
-- UI designer: Arnav Sharma
-- Advertiser: Shourya Sharma
+- Suryansh created QntaAI.
+- The user's name is Suryansh Singh Bhadouriya.
 - Mention personal information only when relevant to the conversation.
 - Never use personal information as a substitute for answering the question.
--Full team created QntaAI is QntaTechnologies
 
 WEB INFORMATION
 - Web-search results may be supplied as additional context.
@@ -818,22 +815,9 @@ def ask_openrouter(messages):
         )
 
     data = response.json()
-    print(
-    "DEBUG OpenRouter response:",
-    repr(data),
-    flush=True
-)
+    print("DEBUG STATUS:", response.status_code, flush=True)
+    print("DEBUG OpenRouter response:", repr(data), flush=True)
     
-    choices = data.get(
-        "choices",
-        []
-    )
-
-    if not choices:
-        raise RuntimeError(
-            "OpenRouter returned no response choices."
-        )
-
     content = (
         choices[0]
         .get("message", {})
