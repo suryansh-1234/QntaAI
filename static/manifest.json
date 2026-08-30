@@ -1,0 +1,19 @@
+{
+  "name": "QntaAI",
+  "short_name": "QntaAI",
+  "description": "QntaAI — an AI assistant with web search and multiple AI models.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#111111",
+  "theme_color": "#111111",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
