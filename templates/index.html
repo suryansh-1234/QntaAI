@@ -1765,6 +1765,66 @@
         /* QNTAAI HOME POSITION */
         .welcome { margin-top: 5vh; }
 
+
+/* ============================================================
+   QntaAI MODEL SYMBOL
+   CSS-only geometric symbol
+   ============================================================ */
+
+.qnta-model-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.qnta-model-symbol {
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+
+    border: 2px solid currentColor;
+    border-radius: 5px;
+
+    position: relative;
+    display: inline-block;
+
+    box-sizing: border-box;
+}
+
+.qnta-model-symbol::before {
+    content: "";
+
+    position: absolute;
+
+    width: 6px;
+    height: 6px;
+
+    left: 4px;
+    top: 4px;
+
+    background: currentColor;
+
+    border-radius: 50%;
+}
+
+.qnta-model-symbol::after {
+    content: "";
+
+    position: absolute;
+
+    width: 2px;
+    height: 10px;
+
+    right: 2px;
+    top: 2px;
+
+    background: currentColor;
+
+    transform: rotate(45deg);
+
+    border-radius: 2px;
+}
+
 </style>
 </head>
 <body>
@@ -2014,22 +2074,91 @@
                                 Model
                             </label>
 
-                            <select
-                                id="modelSelect"
-                                aria-label="Select AI model"
-                            >
-                                <option value="gpt" selected>
-                                    GPT
+                            <div class="qnta-model-control">
+
+                                <span
+                                    class="qnta-model-symbol"
+                                    aria-hidden="true"
+                                ></span>
+
+                                <select
+                                    id="modelSelect"
+                                    aria-label="Select AI model"
+                                >
+                                <option value="openrouter/free" selected>
+                                    Auto (Free)
                                 </option>
 
-                                <option value="gemini">
-                                    Gemini
+                                <option value="inclusionai/ling-3.0-flash-fin:free">
+                                    Ling 3.0 Flash Fin
                                 </option>
 
-                                <option value="grok">
-                                    Grok
+                                <option value="dots-studio/dots-3-note-preview:free">
+                                    Dots3 Note Preview
+                                </option>
+
+                                <option value="liquid/lfm-2.5-2.6b:free">
+                                    LFM 2.5 2.6B
+                                </option>
+
+                                <option value="nvidia/nemotron-3.5-lightning:free">
+                                    Nemotron 3.5 Lightning
+                                </option>
+
+                                <option value="thinkingmachines/inkling-small:free">
+                                    Inkling Small
+                                </option>
+
+                                <option value="poolside/laguna-s-2.1:free">
+                                    Laguna S 2.1
+                                </option>
+
+                                <option value="thinkingmachines/inkling:free">
+                                    Inkling
+                                </option>
+
+                                <option value="poolside/laguna-xs-2.1:free">
+                                     Laguna XS 2.1
+                                </option>
+
+                                <option value="cohere/north-mini-code:free">
+                                    North Mini Code
+                                </option>
+
+                                <option value="z-ai/glm-5.2:free">
+                                    GLM 5.2
+                                </option>
+
+                                <option value="nvidia/nemotron-3-ultra-550b-a55b:free">
+                                    Nemotron 3 Ultra
+                                </option>
+
+                                <option value="minimax/minimax-m3:free">
+                                    MiniMax M3
+                                </option>
+
+                                <option value="nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free">
+                                    Nemotron 3 Nano Omni
+                                </option>
+
+                                <option value="google/gemma-4-26b-a4b-it:free">
+                                    Gemma 4 26B
+                                </option>
+
+                                <option value="google/gemma-4-31b-it:free">
+                                    Gemma 4 31B
+                                </option>
+
+                                <option value="minimax/minimax-m2.7:free">
+                                    MiniMax M2.7
+                                </option>
+
+                                <option value="nvidia/nemotron-3-super-120b-a12b:free">
+                                    Nemotron 3 Super
                                 </option>
                             </select>
+
+                            </div>
 
                         </div>
 

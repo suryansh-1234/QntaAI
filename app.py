@@ -730,10 +730,35 @@ def build_web_context(results):
 
     return "\n\n".join(chunks)
 # ============================================================
+# QntaAI MODEL CONFIGURATION
+# ============================================================
+
+ALLOWED_MODELS = {
+    "openrouter/free",
+    "inclusionai/ling-3.0-flash-fin:free",
+    "dots-studio/dots-3-note-preview:free",
+    "liquid/lfm-2.5-2.6b:free",
+    "nvidia/nemotron-3.5-lightning:free",
+    "thinkingmachines/inkling-small:free",
+    "poolside/laguna-s-2.1:free",
+    "thinkingmachines/inkling:free",
+    "poolside/laguna-xs-2.1:free",
+    "cohere/north-mini-code:free",
+    "z-ai/glm-5.2:free",
+    "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "minimax/minimax-m3:free",
+    "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+    "google/gemma-4-26b-a4b-it:free",
+    "google/gemma-4-31b-it:free",
+    "minimax/minimax-m2.7:free",
+    "nvidia/nemotron-3-super-120b-a12b:free",
+}
+
+# ============================================================
 # OPENROUTER
 # ============================================================
 
-def ask_openrouter(messages):
+def ask_openrouter(messages, model):
     if not OPENROUTER_API_KEY:
         raise RuntimeError(
             "OPENROUTER_API_KEY is not configured on the server."
@@ -747,7 +772,7 @@ def ask_openrouter(messages):
     }
 
     payload = {
-        "model": "openrouter/free",
+        "model": model,
         "messages": messages,
         "max_tokens": 5000,
     }
@@ -882,7 +907,7 @@ def ask_openrouter(messages):
 
     return content
 
-
+@app.route("/")
 def index():
     return render_template("index.html")
 
@@ -1030,6 +1055,20 @@ def chat():
         ), 429
 
     data = request.form.to_dict()
+
+    selected_model = clean_text(
+        data.get("model")
+    ).lower()
+
+    allowed_models = ALLOWED_MODELS
+
+    if selected_model not in allowed_models:
+        return jsonify(
+            {
+                "error":
+                    "Invalid model selection."
+            }
+        ), 400
 
     try:
         data["messages"] = json.loads(
@@ -1347,7 +1386,8 @@ def chat():
 
     try:
         reply = ask_openrouter(
-            ai_messages
+            ai_messages,
+            selected_model
         )
         
         
