@@ -1456,6 +1456,23 @@ def chat():
                 sources
         }
     )
+
+# ============================================================
+# QNTAAI FAVICON
+# ============================================================
+
+@app.route("/favicon.svg")
+def qntaai_favicon_svg():
+    return app.send_static_file("qntaai-favicon.svg")
+
+
+@app.route("/favicon.ico")
+def qntaai_favicon_ico():
+    response = app.send_static_file("qntaai-favicon.svg")
+    response.headers["Content-Type"] = "image/svg+xml"
+    return response
+
+
 # ============================================================
 # DEVELOPMENT ENTRY POINT
 # ============================================================
