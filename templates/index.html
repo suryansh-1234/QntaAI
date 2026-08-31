@@ -523,38 +523,7 @@
 
             text-align: center;
         }
-
-        .welcome-orb {
-            width: 62px;
-            height: 62px;
-
-            display: grid;
-            place-items: center;
-
-            margin:
-                0 auto 25px;
-
-            border-radius: 20px;
-
-            font-size: 27px;
-
-            font-weight: 800;
-
-            color: white;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #7c3aed,
-                    #ec4899
-                );
-
-            box-shadow:
-                0 0 50px
-                rgba(139, 92, 246, .25);
-        }
-
-        .welcome h1 {
+.welcome h1 {
             font-size:
                 clamp(30px, 5vw, 48px);
 
@@ -1446,21 +1415,7 @@
         .welcome {
             margin-top: 10vh;
         }
-
-        .welcome-orb {
-            background:
-                linear-gradient(
-                    135deg,
-                    #6d5dfc,
-                    #a394ff
-                );
-
-            box-shadow:
-                0 14px 40px
-                rgba(109,93,252,.20);
-        }
-
-        .welcome h1 {
+.welcome h1 {
             color: #17171c;
 
             letter-spacing:
@@ -1835,6 +1790,1519 @@
     border-radius: 2px;
 }
 
+
+/* =========================================================
+   QNTAAI CALM UI POLISH
+   ========================================================= */
+
+:root {
+    --qnta-bg: #0b0b0d;
+    --qnta-surface: #111114;
+    --qnta-surface-soft: #151519;
+    --qnta-border: rgba(255,255,255,.075);
+    --qnta-border-hover: rgba(255,255,255,.13);
+    --qnta-text: #f3f3f3;
+    --qnta-muted: #9a9a9f;
+    --qnta-dim: #707076;
+    --qnta-radius: 18px;
+}
+
+/* ---------- GLOBAL ---------- */
+
+html,
+body {
+    background: var(--qnta-bg);
+    color: var(--qnta-text);
+}
+
+body {
+    letter-spacing: -0.01em;
+}
+
+.app {
+    background: var(--qnta-bg);
+}
+
+/* ---------- SIDEBAR ---------- */
+
+.sidebar {
+    background: #0d0d10;
+    border-right: 1px solid var(--qnta-border);
+}
+
+.brand {
+    padding-left: 18px;
+}
+
+.brand-icon {
+    border-radius: 11px;
+    box-shadow: none;
+}
+
+.brand-name {
+    font-weight: 650;
+    letter-spacing: -0.025em;
+}
+
+.new-chat {
+    margin: 8px 14px 22px;
+    border-radius: 12px;
+    border: 1px solid var(--qnta-border);
+    background: rgba(255,255,255,.035);
+    transition:
+        background .18s ease,
+        border-color .18s ease,
+        transform .18s ease;
+}
+
+.new-chat:hover {
+    background: rgba(255,255,255,.065);
+    border-color: var(--qnta-border-hover);
+    transform: translateY(-1px);
+}
+
+.history-title {
+    color: var(--qnta-dim);
+    font-size: 11px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+
+.history-chat-button {
+    border-radius: 10px;
+    transition: background .18s ease;
+}
+
+.history-chat-button:hover {
+    background: rgba(255,255,255,.045);
+}
+
+.history-chat-button .history-chat-title {
+    color: #cfcfd3;
+}
+
+.history-delete-button {
+    opacity: .35;
+    transition: opacity .18s ease;
+}
+
+.history-chat-item:hover .history-delete-button {
+    opacity: .85;
+}
+
+.sidebar-footer {
+    border-top: 1px solid var(--qnta-border);
+}
+
+.sidebar-link {
+    opacity: .78;
+    transition: opacity .18s ease;
+}
+
+.sidebar-link:hover {
+    opacity: 1;
+}
+
+.sidebar-tagline {
+    color: #66666c;
+}
+
+/* ---------- TOP BAR ---------- */
+
+.topbar {
+    background: rgba(11,11,13,.82);
+    border-bottom: 1px solid rgba(255,255,255,.045);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+.topbar-title {
+    color: #d8d8dc;
+    font-weight: 520;
+}
+
+/* ---------- MAIN CHAT ---------- */
+
+.messages {
+    background:
+        radial-gradient(
+            circle at 50% 35%,
+            rgba(255,255,255,.018),
+            transparent 38%
+        ),
+        var(--qnta-bg);
+}
+
+/* ---------- WELCOME ---------- */
+
+.welcome {
+    max-width: 720px;
+    margin: auto;
+    padding: 72px 24px 130px;
+    text-align: center;
+}
+.welcome h1 {
+    margin-bottom: 12px;
+
+    color: #f5f5f6;
+
+    font-size: clamp(30px, 5vw, 46px);
+    line-height: 1.08;
+
+    font-weight: 650;
+    letter-spacing: -.045em;
+}
+
+.welcome p {
+    max-width: 560px;
+    margin: 0 auto;
+
+    color: #8f8f95;
+
+    font-size: 15px;
+    line-height: 1.7;
+}
+
+/* ---------- COMPOSER ---------- */
+
+.composer-wrap {
+    background:
+        linear-gradient(
+            to top,
+            #0b0b0d 72%,
+            rgba(11,11,13,.92)
+        );
+
+    padding-top: 20px;
+}
+
+.composer {
+    width: min(820px, calc(100% - 28px));
+    margin: 0 auto 18px;
+
+    background: #121215;
+
+    border: 1px solid rgba(255,255,255,.085);
+    border-radius: 19px;
+
+    box-shadow:
+        0 14px 50px rgba(0,0,0,.25);
+
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease;
+}
+
+.composer:focus-within {
+    border-color: rgba(255,255,255,.15);
+
+    box-shadow:
+        0 18px 60px rgba(0,0,0,.34);
+}
+
+.composer-main {
+    min-height: 58px;
+    padding: 8px 10px 8px 8px;
+}
+
+#prompt {
+    color: #eeeeef;
+    background: transparent;
+    font-size: 15px;
+    line-height: 1.55;
+}
+
+#prompt::placeholder {
+    color: #6f6f75;
+}
+
+/* ---------- COMPOSER BUTTONS ---------- */
+
+.attachment-button,
+.mic-button,
+.send-button {
+    border-radius: 12px;
+
+    transition:
+        background .16s ease,
+        transform .16s ease,
+        opacity .16s ease;
+}
+
+.attachment-button:hover,
+.mic-button:hover {
+    background: rgba(255,255,255,.07);
+}
+
+.send-button {
+    background: #eeeeef;
+    color: #111114;
+}
+
+.send-button:not(:disabled):hover {
+    transform: translateY(-1px);
+    background: #ffffff;
+}
+
+.send-button:disabled {
+    opacity: .28;
+}
+
+/* ---------- COMPOSER OPTIONS ---------- */
+
+.composer-bottom {
+    border-top: 1px solid rgba(255,255,255,.045);
+    padding: 7px 10px 8px;
+}
+
+.model-selector label {
+    color: #707076;
+    font-size: 10px;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.qnta-model-control {
+    border: 1px solid rgba(255,255,255,.06);
+    background: rgba(255,255,255,.025);
+    border-radius: 10px;
+
+    transition:
+        background .16s ease,
+        border-color .16s ease;
+}
+
+.qnta-model-control:hover {
+    background: rgba(255,255,255,.05);
+    border-color: rgba(255,255,255,.1);
+}
+
+.qnta-model-symbol {
+    opacity: .72;
+}
+
+#modelSelect {
+    color: #c9c9ce;
+}
+
+/* ---------- SEARCH STATUS ---------- */
+
+.search-status {
+    color: #929298;
+    border-top: 1px solid rgba(255,255,255,.035);
+    background: rgba(255,255,255,.012);
+}
+
+.search-status-dot {
+    opacity: .65;
+}
+
+/* ---------- MOBILE ---------- */
+
+@media (max-width: 700px) {
+
+    .welcome {
+        padding:
+            54px 20px 115px;
+    }
+.welcome h1 {
+        font-size: 31px;
+    }
+
+    .welcome p {
+        font-size: 14px;
+        line-height: 1.65;
+    }
+
+    .composer {
+        width: calc(100% - 18px);
+        margin-bottom: 9px;
+        border-radius: 17px;
+    }
+
+    .composer-main {
+        min-height: 54px;
+    }
+
+    .composer-bottom {
+        padding: 6px 8px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+
+/* =========================================================
+   QNTAAI UI REFINEMENT PASS 1
+   Calm / Clean / Minimal
+========================================================= */
+
+/* ---------- Welcome ---------- */
+
+.welcome {
+    width: min(720px, 100%);
+    margin: auto;
+    padding: 48px 24px 140px;
+    text-align: center;
+}
+
+.welcome h1 {
+    margin: 0;
+
+    font-size: clamp(28px, 4vw, 38px);
+    line-height: 1.15;
+
+    letter-spacing: -0.035em;
+    font-weight: 650;
+}
+
+.welcome p {
+    max-width: 560px;
+    margin: 16px auto 0;
+
+    font-size: 15px;
+    line-height: 1.65;
+
+    color: rgba(255, 255, 255, 0.56);
+}
+
+
+/* ---------- Composer ---------- */
+
+.composer-wrap {
+    padding:
+        12px
+        clamp(12px, 3vw, 28px)
+        20px;
+}
+
+.composer {
+    width: min(820px, 100%);
+    margin: 0 auto;
+
+    border-radius: 20px;
+
+    background: rgba(18, 18, 22, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.085);
+
+    box-shadow:
+        0 10px 40px rgba(0, 0, 0, 0.22);
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.composer:focus-within {
+    border-color: rgba(255, 255, 255, 0.15);
+
+    box-shadow:
+        0 12px 44px rgba(0, 0, 0, 0.27);
+}
+
+
+/* ---------- Composer input ---------- */
+
+.composer-main {
+    min-height: 58px;
+
+    display: flex;
+    align-items: flex-end;
+
+    gap: 7px;
+
+    padding: 9px;
+}
+
+#prompt {
+    flex: 1;
+
+    min-height: 40px;
+    max-height: 180px;
+
+    padding:
+        9px
+        8px;
+
+    resize: none;
+
+    border: 0;
+    outline: 0;
+
+    background: transparent;
+
+    color: inherit;
+
+    font-size: 15px;
+    line-height: 1.5;
+
+    font-family: inherit;
+}
+
+#prompt::placeholder {
+    color: rgba(255, 255, 255, 0.38);
+}
+
+
+/* ---------- Composer buttons ---------- */
+
+.attachment-button,
+.mic-button,
+.send-button {
+    flex: 0 0 auto;
+
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+    border-radius: 12px;
+
+    background: transparent;
+
+    color: rgba(255, 255, 255, 0.58);
+
+    transition:
+        background 0.16s ease,
+        color 0.16s ease,
+        transform 0.16s ease;
+}
+
+.attachment-button:hover,
+.mic-button:hover {
+    background: rgba(255, 255, 255, 0.065);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.attachment-button:active,
+.mic-button:active,
+.send-button:active {
+    transform: scale(0.94);
+}
+
+.send-button {
+    background: rgba(255, 255, 255, 0.9);
+    color: #111;
+
+    font-size: 19px;
+    font-weight: 700;
+}
+
+.send-button:hover {
+    background: #fff;
+    transform: translateY(-1px);
+}
+
+.send-button:disabled {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.25);
+
+    cursor: default;
+    transform: none;
+}
+
+
+/* ---------- Composer bottom ---------- */
+
+.composer-bottom {
+    min-height: 43px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 10px;
+
+    padding:
+        0
+        12px
+        10px;
+}
+
+.model-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.model-selector label {
+    display: none;
+}
+
+.qnta-model-control {
+    min-height: 32px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    padding:
+        0
+        9px;
+
+    border-radius: 9px;
+
+    background: rgba(255, 255, 255, 0.045);
+    border: 1px solid rgba(255, 255, 255, 0.065);
+
+    transition:
+        background 0.16s ease,
+        border-color 0.16s ease;
+}
+
+.qnta-model-control:hover {
+    background: rgba(255, 255, 255, 0.065);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.qnta-model-control select {
+    border: 0;
+    outline: 0;
+
+    background: transparent;
+    color: rgba(255, 255, 255, 0.7);
+
+    font-size: 12px;
+
+    cursor: pointer;
+}
+
+
+/* ---------- Search status ---------- */
+
+.search-status {
+    margin-left: auto;
+}
+
+
+/* ---------- Mobile ---------- */
+
+@media (max-width: 600px) {
+
+    .welcome {
+        padding:
+            34px
+            18px
+            120px;
+    }
+.welcome h1 {
+        font-size: 28px;
+    }
+
+    .welcome p {
+        font-size: 14px;
+    }
+
+    .composer-wrap {
+        padding:
+            8px
+            8px
+            12px;
+    }
+
+    .composer {
+        border-radius: 17px;
+    }
+
+    .composer-main {
+        padding: 7px;
+    }
+
+    .attachment-button,
+    .mic-button,
+    .send-button {
+        width: 36px;
+        height: 36px;
+    }
+
+    .composer-bottom {
+        padding:
+            0
+            9px
+            8px;
+    }
+
+    .qnta-model-control {
+        max-width: 180px;
+    }
+
+    .qnta-model-control select {
+        max-width: 145px;
+    }
+}
+
+
+/* =========================================================
+   QNTAAI LIGHT UI
+   Calm / Clean / Spacious
+   Perplexity-inspired visual language
+   QntaAI identity preserved
+========================================================= */
+
+/* ---------- Global foundation ---------- */
+
+html,
+body {
+    background: #f7f6f3 !important;
+    color: #202020 !important;
+}
+
+body {
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif !important;
+}
+
+.app,
+.main {
+    background: #f7f6f3 !important;
+}
+
+
+/* ---------- Sidebar ---------- */
+
+.sidebar {
+    background: #f7f6f3 !important;
+    border-right: 1px solid rgba(0, 0, 0, 0.055) !important;
+    color: #222 !important;
+}
+
+.brand-name {
+    color: #171717 !important;
+}
+
+.brand-icon {
+    background: #202020 !important;
+    color: #fff !important;
+}
+
+.history-title {
+    color: #8a8985 !important;
+}
+
+.history-chat-button {
+    color: #42413e !important;
+}
+
+.history-chat-button:hover {
+    background: rgba(0, 0, 0, 0.045) !important;
+}
+
+.history-chat-button.active,
+.history-chat-button.active:hover {
+    background: rgba(0, 0, 0, 0.065) !important;
+    color: #161616 !important;
+}
+
+.sidebar-footer {
+    color: #777570 !important;
+}
+
+.sidebar-link {
+    color: #686762 !important;
+}
+
+.sidebar-link:hover {
+    color: #202020 !important;
+}
+
+
+/* ---------- New chat ---------- */
+
+.new-chat {
+    background: #ffffff !important;
+    color: #222 !important;
+
+    border: 1px solid rgba(0, 0, 0, 0.065) !important;
+
+    box-shadow:
+        0 4px 18px rgba(0, 0, 0, 0.045) !important;
+}
+
+.new-chat:hover {
+    background: #ffffff !important;
+
+    box-shadow:
+        0 6px 22px rgba(0, 0, 0, 0.07) !important;
+}
+
+
+/* ---------- Top bar ---------- */
+
+.topbar {
+    background: rgba(247, 246, 243, 0.86) !important;
+    color: #242321 !important;
+
+    border-bottom: 1px solid rgba(0, 0, 0, 0.035) !important;
+
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
+.topbar-title {
+    color: #292825 !important;
+}
+
+.menu-button {
+    color: #292825 !important;
+    background: transparent !important;
+}
+
+.menu-button:hover {
+    background: rgba(0, 0, 0, 0.05) !important;
+}
+
+.online {
+    background: #777 !important;
+}
+
+
+/* ---------- Message area ---------- */
+
+.messages {
+    background: #f7f6f3 !important;
+    color: #222 !important;
+}
+
+
+/* ---------- Welcome ---------- */
+
+.welcome {
+    color: #222 !important;
+}
+.welcome h1 {
+    color: #242321 !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.035em !important;
+}
+
+.welcome p {
+    color: #77746e !important;
+}
+
+
+/* ---------- Composer wrapper ---------- */
+
+.composer-wrap {
+    background: transparent !important;
+}
+
+.composer {
+    background: #ffffff !important;
+
+    border: 1px solid rgba(0, 0, 0, 0.055) !important;
+
+    border-radius: 24px !important;
+
+    box-shadow:
+        0 10px 35px rgba(0, 0, 0, 0.075),
+        0 2px 8px rgba(0, 0, 0, 0.035) !important;
+
+    transition:
+        box-shadow 0.2s ease,
+        border-color 0.2s ease !important;
+}
+
+.composer:focus-within {
+    border-color: rgba(0, 0, 0, 0.09) !important;
+
+    box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.09),
+        0 2px 9px rgba(0, 0, 0, 0.04) !important;
+}
+
+
+/* ---------- Prompt ---------- */
+
+#prompt {
+    color: #292825 !important;
+}
+
+#prompt::placeholder {
+    color: #8d8b86 !important;
+}
+
+
+/* ---------- Composer controls ---------- */
+
+.attachment-button,
+.mic-button {
+    color: #252422 !important;
+    background: transparent !important;
+}
+
+.attachment-button:hover,
+.mic-button:hover {
+    background: rgba(0, 0, 0, 0.055) !important;
+    color: #111 !important;
+}
+
+
+/* ---------- Send ---------- */
+
+.send-button {
+    background: #242321 !important;
+    color: #fff !important;
+
+    border-radius: 50% !important;
+
+    box-shadow:
+        0 3px 10px rgba(0, 0, 0, 0.12) !important;
+}
+
+.send-button:hover {
+    background: #111 !important;
+    color: #fff !important;
+}
+
+.send-button:disabled {
+    background: #e8e7e3 !important;
+    color: #aaa8a2 !important;
+    box-shadow: none !important;
+}
+
+
+/* ---------- Model selector ---------- */
+
+.qnta-model-control {
+    background: #eeece8 !important;
+
+    border: 0 !important;
+
+    border-radius: 999px !important;
+
+    color: #292825 !important;
+}
+
+.qnta-model-control:hover {
+    background: #e8e6e1 !important;
+}
+
+.qnta-model-control select {
+    background: transparent !important;
+    color: #292825 !important;
+}
+
+.qnta-model-symbol {
+    color: #4a4945 !important;
+}
+
+
+/* ---------- Search status ---------- */
+
+.search-status {
+    color: #77746e !important;
+}
+
+.search-status-dot {
+    background: #77746e !important;
+}
+
+
+/* ---------- Attachment list ---------- */
+
+.attachment-list {
+    color: #4b4945 !important;
+}
+
+.attachment-list > * {
+    background: #f0efec !important;
+    border-color: rgba(0, 0, 0, 0.055) !important;
+    color: #3f3d39 !important;
+}
+
+
+/* ---------- AI messages ---------- */
+
+.message,
+.ai-message {
+    color: #252422 !important;
+}
+
+.message-content,
+.ai-message-content {
+    color: #252422 !important;
+}
+
+.user-message {
+    color: #fff !important;
+    background: #252422 !important;
+}
+
+
+/* ---------- Generic cards ---------- */
+
+.card,
+.source-card {
+    background: #fff !important;
+    border-color: rgba(0, 0, 0, 0.055) !important;
+    box-shadow:
+        0 4px 18px rgba(0, 0, 0, 0.045) !important;
+}
+
+
+/* ---------- Mobile ---------- */
+
+@media (max-width: 700px) {
+
+    .sidebar {
+        box-shadow:
+            8px 0 35px rgba(0, 0, 0, 0.08) !important;
+    }
+
+    .topbar {
+        background: rgba(247, 246, 243, 0.92) !important;
+    }
+
+    .welcome {
+        padding:
+            38px
+            18px
+            125px !important;
+    }
+
+    .welcome h1 {
+        font-size: 28px !important;
+    }
+
+    .welcome p {
+        font-size: 14px !important;
+        line-height: 1.6 !important;
+    }
+
+    .composer-wrap {
+        padding:
+            8px
+            8px
+            14px !important;
+    }
+
+    .composer {
+        border-radius: 23px !important;
+    }
+}
+
+
+/* ---------- Reduced visual noise ---------- */
+
+button,
+select,
+textarea {
+    -webkit-tap-highlight-color: transparent;
+}
+
+button {
+    font-family: inherit;
+}
+
+* {
+    scrollbar-color: #c9c7c2 transparent;
+}
+
+*::-webkit-scrollbar {
+    width: 7px;
+}
+
+*::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: #cbc9c4;
+    border-radius: 999px;
+}
+
+
+/* =========================================================
+   QNTAAI UI REFINEMENT PASS 2
+   Clean / Calm / Light Interface
+   ========================================================= */
+
+:root {
+    --qnta-bg: #faf9f7;
+    --qnta-surface: #ffffff;
+    --qnta-surface-soft: #f5f4f1;
+    --qnta-border: #e8e6e1;
+    --qnta-border-soft: #efede9;
+    --qnta-text: #242321;
+    --qnta-text-soft: #77746f;
+    --qnta-text-muted: #99958e;
+    --qnta-shadow:
+        0 8px 30px rgba(0, 0, 0, 0.06);
+}
+
+/* =========================
+   APPLICATION BACKGROUND
+   ========================= */
+
+html,
+body {
+    background: var(--qnta-bg) !important;
+    color: var(--qnta-text);
+}
+
+body {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+.app,
+.main {
+    background: var(--qnta-bg) !important;
+}
+
+
+/* =========================
+   TOP BAR
+   ========================= */
+
+.topbar {
+    background: rgba(250, 249, 247, 0.88) !important;
+    border-bottom: 1px solid var(--qnta-border-soft) !important;
+
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+.topbar-title {
+    color: var(--qnta-text) !important;
+    font-weight: 500;
+}
+
+.menu-button {
+    color: #3d3b38 !important;
+    background: transparent !important;
+    border: 0 !important;
+}
+
+.menu-button:hover {
+    background: #efede9 !important;
+}
+
+
+/* =========================
+   ONLINE INDICATOR
+   ========================= */
+
+.online {
+    background: #8e8b85 !important;
+    box-shadow:
+        0 0 0 5px rgba(142, 139, 133, 0.08) !important;
+}
+
+
+/* =========================
+   SIDEBAR
+   ========================= */
+
+.sidebar {
+    background: #f7f6f3 !important;
+    border-right: 1px solid var(--qnta-border) !important;
+}
+
+.brand {
+    color: var(--qnta-text) !important;
+}
+
+.brand-icon {
+    background: #242321 !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+}
+
+.new-chat {
+    background: #ffffff !important;
+    color: #292825 !important;
+
+    border: 1px solid var(--qnta-border) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.035) !important;
+}
+
+.new-chat:hover {
+    background: #f1f0ed !important;
+    transform: none !important;
+}
+
+.history-title {
+    color: #8a867f !important;
+}
+
+.history-chat-button {
+    color: #4b4843 !important;
+    background: transparent !important;
+}
+
+.history-chat-button:hover,
+.history-chat-button.active {
+    background: #ebe9e5 !important;
+    color: #242321 !important;
+}
+
+.history-delete-button {
+    opacity: 0.45;
+}
+
+.history-delete-button:hover {
+    opacity: 1;
+    background: #ebe9e5 !important;
+}
+
+.sidebar-footer {
+    border-top: 1px solid var(--qnta-border) !important;
+}
+
+.sidebar-link {
+    color: #66625c !important;
+}
+
+.sidebar-link:hover {
+    color: #242321 !important;
+}
+
+.sidebar-tagline {
+    color: #9a968f !important;
+}
+
+
+/* =========================
+   MESSAGE AREA
+   ========================= */
+
+.messages {
+    background: var(--qnta-bg) !important;
+}
+
+.message {
+    animation: qnta-message-in 0.18s ease-out;
+}
+
+@keyframes qnta-message-in {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* =========================
+   USER MESSAGE
+   ========================= */
+
+.user-message,
+.message.user {
+    color: var(--qnta-text) !important;
+}
+
+.user-message .message-content,
+.message.user .message-content {
+    background: #eeece8 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+
+/* =========================
+   AI MESSAGE
+   ========================= */
+
+.ai-message,
+.message.ai {
+    color: #302e2a !important;
+}
+
+.ai-message .message-content,
+.message.ai .message-content {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+
+/* =========================
+   COMPOSER
+   ========================= */
+
+.composer-wrap {
+    background: linear-gradient(
+        to top,
+        var(--qnta-bg) 72%,
+        rgba(250, 249, 247, 0)
+    ) !important;
+}
+
+.composer {
+    background: #ffffff !important;
+
+    border: 1px solid #e9e7e2 !important;
+
+    border-radius: 28px !important;
+
+    box-shadow:
+        0 10px 35px rgba(0, 0, 0, 0.07),
+        0 2px 8px rgba(0, 0, 0, 0.025) !important;
+}
+
+.composer:focus-within {
+    border-color: #dedbd5 !important;
+
+    box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.08),
+        0 0 0 3px rgba(0, 0, 0, 0.025) !important;
+}
+
+#prompt {
+    color: #292724 !important;
+}
+
+#prompt::placeholder {
+    color: #9a968f !important;
+}
+
+
+/* =========================
+   ATTACHMENT BUTTON
+   ========================= */
+
+.attachment-button {
+    color: #34312d !important;
+    background: transparent !important;
+    border: 0 !important;
+}
+
+.attachment-button:hover {
+    background: #f0eeea !important;
+}
+
+
+/* =========================
+   MODEL CONTROL
+   ========================= */
+
+.model-selector label {
+    color: #85817a !important;
+}
+
+.qnta-model-control {
+    background: #efede9 !important;
+    border: 0 !important;
+    border-radius: 18px !important;
+    box-shadow: none !important;
+}
+
+.qnta-model-control:hover {
+    background: #e9e7e3 !important;
+}
+
+.qnta-model-control select {
+    color: #36332f !important;
+    background: transparent !important;
+}
+
+.qnta-model-symbol {
+    color: #5d5953 !important;
+}
+
+
+/* =========================
+   SEARCH MODE
+   ========================= */
+
+.search-mode,
+.search-mode-control,
+.mode-selector {
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+.search-mode button,
+.search-mode select,
+.mode-selector button,
+.mode-selector select {
+    background: #efede9 !important;
+    color: #383530 !important;
+    border: 0 !important;
+}
+
+
+/* =========================
+   MICROPHONE
+   ========================= */
+
+.mic-button {
+    color: #383530 !important;
+    background: transparent !important;
+    border: 0 !important;
+}
+
+.mic-button:hover {
+    background: #efede9 !important;
+}
+
+
+/* =========================
+   SEND BUTTON
+   ========================= */
+
+.send-button {
+    background: #252321 !important;
+    color: #ffffff !important;
+    border: 0 !important;
+
+    box-shadow: none !important;
+
+    transition:
+        transform 0.15s ease,
+        opacity 0.15s ease,
+        background 0.15s ease !important;
+}
+
+.send-button:not(:disabled):hover {
+    background: #11100f !important;
+    transform: translateY(-1px);
+}
+
+.send-button:disabled {
+    background: #f1efeb !important;
+    color: #b3afa8 !important;
+    opacity: 1 !important;
+}
+
+
+/* =========================
+   SEARCH STATUS
+   ========================= */
+
+.search-status {
+    color: #77736d !important;
+}
+
+.search-status-dot {
+    background: #96918a !important;
+    box-shadow:
+        0 0 0 4px rgba(150, 145, 138, 0.08) !important;
+}
+
+
+/* =========================
+   ATTACHMENTS
+   ========================= */
+
+.attachment-list {
+    background: transparent !important;
+}
+
+.attachment-item {
+    background: #f2f0ec !important;
+    border: 1px solid var(--qnta-border) !important;
+}
+
+
+/* =========================
+   SCROLLBAR
+   ========================= */
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #d8d5cf transparent;
+}
+
+*::-webkit-scrollbar {
+    width: 7px;
+}
+
+*::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: #d8d5cf;
+    border-radius: 20px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: #c5c1ba;
+}
+
+
+/* =========================
+   MOBILE
+   ========================= */
+
+@media (max-width: 700px) {
+
+    .topbar {
+        min-height: 64px;
+    }
+
+    .messages {
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+    }
+
+    .composer-wrap {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+        padding-bottom: 12px !important;
+    }
+
+    .composer {
+        border-radius: 25px !important;
+    }
+
+    .composer-main {
+        min-height: 58px;
+    }
+
+    #prompt {
+        font-size: 16px !important;
+    }
+
+    .qnta-model-control {
+        border-radius: 17px !important;
+    }
+
+    .send-button {
+        width: 44px !important;
+        height: 44px !important;
+        border-radius: 50% !important;
+    }
+}
+
+
+/* =========================
+   REDUCE MOTION
+   ========================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
 </style>
 </head>
 <body>
@@ -1981,13 +3449,7 @@
                     class="welcome"
                     id="welcome"
                 >
-
-                    <div class="welcome-orb">
-                        Q
-                    </div>
-
-
-                    <h1>
+<h1>
                         What are you curious about?
                     </h1>
 
@@ -3340,12 +4802,7 @@ function startNewChat() {
             class="welcome"
             id="welcome"
         >
-
-            <div class="welcome-orb">
-                Q
-            </div>
-
-            <h1>
+<h1>
                 What are you curious about?
             </h1>
 
@@ -3842,11 +5299,7 @@ async function deleteChat(chatId) {
                 class="welcome"
                 id="welcome"
             >
-                <div class="welcome-orb">
-                    Q
-                </div>
-
-                <h1>
+<h1>
                     What are you curious about?
                 </h1>
 
