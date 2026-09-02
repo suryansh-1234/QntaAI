@@ -68,7 +68,7 @@ PERSONALIZATION
 -CEO & Founder : Suryansh Singh Bhadouriya
 -Co-Founder & Debugger:Govind Trivedi
 -Advertiser:Shourya Sharma
--UI designer:Arnav Sharma
+-UI designer and Interface Developer :Arnav Sharma
 
 - Mention personal information only when relevant to the conversation.
 - Never use personal information as a substitute for answering the question.
@@ -886,23 +886,29 @@ def ask_openrouter(messages, model):
             + repr(message_data)
         )
 
+    # ========================================================
+    # STRICT RESPONSE CONTENT GUARD
+    #
+    # Only message.content is allowed to become the visible
+    # QntaAI response.
+    #
+    # Never read, merge, or fall back to:
+    #   - reasoning
+    #   - reasoning_details
+    # ========================================================
+
     content = message_data.get("content")
 
-    if content is None:
-        raise RuntimeError(
-            "QntaAI received no content from OpenRouter: "
-            + repr(data)
-        )
-
     if not isinstance(content, str):
-        content = str(content)
+        raise RuntimeError(
+            "QntaAI received an invalid content response from OpenRouter."
+        )
 
     content = content.strip()
 
     if not content:
         raise RuntimeError(
-            "QntaAI received an empty response from OpenRouter: "
-            + repr(data)
+            "QntaAI received an empty response from OpenRouter."
         )
 
     return content
