@@ -3829,10 +3829,9 @@ let currentChat = {
     id: createId(),
     title: "New chat",
     messages: [],
-    conversation_id: null
+    conversation_id: null,
+    isLoading: false
 };
-
-let isLoading = false;
 
 if (qntaProButton) {
     qntaProButton.addEventListener(
@@ -4009,7 +4008,7 @@ function updateSendButton() {
         promptEl.value.trim().length > 0;
 
     sendButton.disabled =
-        !hasText || isLoading;
+        !hasText || currentChat.isLoading;
 }
 
 
@@ -4789,7 +4788,8 @@ function startNewChat() {
         id: createId(),
         title: "New chat",
         messages: [],
-        conversation_id: null
+        conversation_id: null,
+        isLoading: false
     };
 
 
@@ -4961,9 +4961,20 @@ function hideSearchStatus() {
 
 async function sendMessage() {
 
-    if (isLoading) {
+    if (currentChat.isLoading) {
         return;
     }
+
+
+    /*
+     * REQUEST ISOLATION
+     *
+     * Capture the chat that started this request.
+     * currentChat is mutable because the user can switch chats
+     * while fetch() is still running.
+     */
+    const requestChatId = currentChat.id;
+    const requestConversationId = currentChat.conversation_id;
 
 
     const text =
@@ -4992,6 +5003,13 @@ async function sendMessage() {
         role: "user",
         content: text
     });
+
+    /*
+     * Register the chat immediately.
+     * A new chat must exist in `chats` before the async
+     * response comes back.
+     */
+    saveCurrentChat();
 
 
     /* =========================
@@ -5027,7 +5045,7 @@ async function sendMessage() {
        LOADING STATE
     ========================= */
 
-    isLoading = true;
+    currentChat.isLoading = true;
 
     updateSendButton();
 
@@ -5067,7 +5085,7 @@ if (
 
                         formData.append(
                             "conversation_id",
-                            currentChat.conversation_id || ""
+                            requestConversationId || ""
                         );
 
                         formData.append(
@@ -5114,12 +5132,26 @@ if (
             data =
                 await response.json();
 
+            /*
+             * Only attach the server conversation ID to the chat
+             * that originally launched this request.
+             */
             if (
                 data &&
                 data.conversation_id
             ) {
-                currentChat.conversation_id =
-                    data.conversation_id;
+                const targetChat =
+                    chats.find(chat => chat.id === requestChatId);
+
+                if (targetChat) {
+                    targetChat.conversation_id =
+                        data.conversation_id;
+                }
+
+                if (currentChat.id === requestChatId) {
+                    currentChat.conversation_id =
+                        data.conversation_id;
+                }
             }
 
         } catch (jsonError) {
@@ -5162,11 +5194,76 @@ if (
            GET AI RESPONSE
         ========================= */
 
+        
+        /*
+         * TEMPORARY MODEL FAILURE HANDLING
+         *
+         * If OpenRouter reports a model-specific 403/429,
+         * disable that model for this browser session and
+         * switch back to Auto (Free).
+         */
+        if (
+            (response.status === 403 || response.status === 429) &&
+            modelSelect &&
+            modelSelect.value !== "openrouter/free"
+        ) {
+            const failedModel = modelSelect.value;
+            const failedOption = modelSelect.querySelector(
+                `option[value="${CSS.escape(failedModel)}"]`
+            );
+
+            if (failedOption) {
+                failedOption.disabled = true;
+                failedOption.textContent =
+                    failedOption.textContent.replace(
+                        /\s*\((?:busy|unavailable)\)$/i,
+                        ""
+                    ) + " (temporarily unavailable)";
+            }
+
+            modelSelect.value = "openrouter/free";
+
+            addMessage(
+                "ai",
+                response.status === 429
+                    ? "That model is temporarily rate-limited. QntaAI switched back to Auto (Free)."
+                    : "That model is not currently available for QntaAI. QntaAI switched back to Auto (Free)."
+            );
+
+            return;
+        }
+
         const reply =
             data &&
             typeof data.reply === "string"
                 ? data.reply
                 : "";
+
+        /*
+         * The user may have switched chats while the request was
+         * running. Never render Chat A's response into Chat B.
+         */
+        const requestChat =
+            chats.find(chat => chat.id === requestChatId);
+
+        if (!requestChat) {
+            return;
+        }
+
+        if (currentChat.id !== requestChatId) {
+            requestChat.messages.push({
+                role: "assistant",
+                content: reply,
+                sources:
+                    data && Array.isArray(data.sources)
+                        ? data.sources
+                        : []
+            });
+
+            saveChats();
+            renderHistory();
+            return;
+        }
 
 
         if (!reply) {
@@ -5221,7 +5318,14 @@ if (
            SAVE MEMORY
         ========================= */
 
-        saveCurrentChat();
+        /*
+         * Save only if the request still belongs to the active chat.
+         * If the user switched chats, that response was already stored
+         * in requestChat above.
+         */
+        if (currentChat.id === requestChatId) {
+            saveCurrentChat();
+        }
 
 
     } catch (error) {
@@ -5249,13 +5353,17 @@ if (
 
         hideSearchStatus();
 
-        isLoading = false;
-
-        updateSendButton();
-
-        promptEl.focus();
-
-        scrollToBottom();
+        /*
+         * A completed request must not change the loading state of a
+         * different chat that the user has switched into.
+         */
+        if (currentChat.id === requestChatId) {
+            currentChat.isLoading = false;
+            updateSendButton();
+            updateSendButton();
+            promptEl.focus();
+            scrollToBottom();
+        }
     }
 }
 /* =========================================================
@@ -5290,7 +5398,8 @@ async function deleteChat(chatId) {
             id: createId(),
             title: "New chat",
             messages: [],
-            conversation_id: null
+            conversation_id: null,
+        isLoading: false
         };
 
         chatTitle.textContent = "New chat";
