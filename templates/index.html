@@ -499,6 +499,102 @@
             overflow-wrap: anywhere;
         }
 
+/* =========================================================
+   QNTAAI RESPONSE TYPOGRAPHY STYLES
+========================================================= */
+
+.message-text p {
+    margin: 0 0 14px;
+    line-height: 1.72;
+}
+
+.message-text p:last-child {
+    margin-bottom: 0;
+}
+
+.message-text h1,
+.message-text h2,
+.message-text h3 {
+    margin: 22px 0 10px;
+    line-height: 1.3;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+}
+
+.message-text h1 {
+    font-size: 1.45em;
+}
+
+.message-text h2 {
+    font-size: 1.25em;
+}
+
+.message-text h3 {
+    font-size: 1.1em;
+}
+
+.message-text ul,
+.message-text ol {
+    margin: 10px 0 16px;
+    padding-left: 24px;
+}
+
+.message-text li {
+    margin: 6px 0;
+    line-height: 1.65;
+}
+
+.message-text strong {
+    font-weight: 700;
+}
+
+.message-text em {
+    font-style: italic;
+}
+
+.message-text code {
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: #f1f1f4;
+    border: 1px solid #e5e5e9;
+    font-family:
+        ui-monospace,
+        SFMono-Regular,
+        Menlo,
+        Monaco,
+        Consolas,
+        monospace;
+    font-size: 0.9em;
+}
+
+.message-text pre {
+    margin: 14px 0;
+    padding: 14px 16px;
+    overflow-x: auto;
+    border-radius: 10px;
+    background: #f5f5f7;
+    border: 1px solid #e6e6ea;
+}
+
+.message-text pre code {
+    display: block;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    font-size: 0.88em;
+    line-height: 1.6;
+    white-space: pre;
+}
+
+.message-text blockquote {
+    margin: 12px 0;
+    padding: 8px 14px;
+    border-left: 3px solid #d8d8df;
+    color: #686872;
+}
+
+
+
         .message.user .message-body {
             padding:
                 12px 15px;
@@ -3878,6 +3974,346 @@ function escapeHtml(value) {
 }
 
 
+
+/* =========================================================
+   QNTAAI RESPONSE TYPOGRAPHY
+========================================================= */
+
+function renderInlineMarkdown(value) {
+
+    let html = escapeHtml(value);
+
+    /*
+     * Inline code first so formatting inside code
+     * is not interpreted as Markdown.
+     */
+    const codeParts = [];
+
+    html = html.replace(
+        /`([^`\n]+)`/g,
+        function (_, code) {
+
+            const index =
+                codeParts.push(
+                    "<code>" + code + "</code>"
+                ) - 1;
+
+            return "\u0000CODE" + index + "\u0000";
+        }
+    );
+
+    /*
+     * Bold
+     */
+    html = html.replace(
+        /\*\*([^*\n]+)\*\*/g,
+        "<strong>$1</strong>"
+    );
+
+    /*
+     * Italic
+     */
+    html = html.replace(
+        /(?<!\*)\*([^*\n]+)\*(?!\*)/g,
+        "<em>$1</em>"
+    );
+
+    /*
+     * Restore inline code.
+     */
+    html = html.replace(
+        /\u0000CODE(\d+)\u0000/g,
+        function (_, index) {
+            return codeParts[Number(index)];
+        }
+    );
+
+    return html;
+}
+
+
+function renderQntaAIResponse(value) {
+
+    const source =
+        String(value ?? "")
+            .replace(/\r\n/g, "\n")
+            .replace(/\r/g, "\n");
+
+    const lines =
+        source.split("\n");
+
+    const output = [];
+
+    let paragraph = [];
+    let listType = null;
+    let codeBlock = null;
+    let quoteLines = [];
+
+
+    function flushParagraph() {
+
+        if (!paragraph.length) {
+            return;
+        }
+
+        const content =
+            paragraph
+                .map(renderInlineMarkdown)
+                .join("<br>");
+
+        output.push(
+            "<p>" + content + "</p>"
+        );
+
+        paragraph = [];
+    }
+
+
+    function closeList() {
+
+        if (!listType) {
+            return;
+        }
+
+        output.push(
+            "</" + listType + ">"
+        );
+
+        listType = null;
+    }
+
+
+    function flushQuote() {
+
+        if (!quoteLines.length) {
+            return;
+        }
+
+        const content =
+            quoteLines
+                .map(renderInlineMarkdown)
+                .join("<br>");
+
+        output.push(
+            "<blockquote>" +
+                content +
+            "</blockquote>"
+        );
+
+        quoteLines = [];
+    }
+
+
+    function closeCodeBlock() {
+
+        if (!codeBlock) {
+            return;
+        }
+
+        output.push(
+            "<pre><code>" +
+                escapeHtml(
+                    codeBlock.join("\n")
+                ) +
+            "</code></pre>"
+        );
+
+        codeBlock = null;
+    }
+
+
+    for (let i = 0; i < lines.length; i++) {
+
+        const line =
+            lines[i];
+
+
+        /*
+         * Fenced code blocks
+         */
+        if (
+            line.trim().startsWith("```")
+        ) {
+
+            if (codeBlock) {
+                closeCodeBlock();
+            } else {
+
+                flushParagraph();
+                closeList();
+                flushQuote();
+
+                codeBlock = [];
+            }
+
+            continue;
+        }
+
+
+        if (codeBlock) {
+
+            codeBlock.push(line);
+
+            continue;
+        }
+
+
+        /*
+         * Empty line
+         */
+        if (!line.trim()) {
+
+            flushParagraph();
+            closeList();
+            flushQuote();
+
+            continue;
+        }
+
+
+        /*
+         * Blockquote
+         */
+        const quoteMatch =
+            line.match(/^\s*>\s?(.*)$/);
+
+        if (quoteMatch) {
+
+            flushParagraph();
+            closeList();
+
+            quoteLines.push(
+                quoteMatch[1]
+            );
+
+            continue;
+        }
+
+
+        /*
+         * Headings
+         */
+        const headingMatch =
+            line.match(
+                /^\s*(#{1,3})\s+(.+?)\s*$/
+            );
+
+        if (headingMatch) {
+
+            flushParagraph();
+            closeList();
+            flushQuote();
+
+            const level =
+                headingMatch[1].length;
+
+            output.push(
+                "<h" + level + ">" +
+                    renderInlineMarkdown(
+                        headingMatch[2]
+                    ) +
+                "</h" + level + ">"
+            );
+
+            continue;
+        }
+
+
+        /*
+         * Bullet list
+         */
+        const bulletMatch =
+            line.match(
+                /^\s*[-*+]\s+(.+)$/
+            );
+
+        if (bulletMatch) {
+
+            flushParagraph();
+            flushQuote();
+
+            if (listType !== "ul") {
+
+                closeList();
+
+                output.push("<ul>");
+
+                listType = "ul";
+            }
+
+            output.push(
+                "<li>" +
+                    renderInlineMarkdown(
+                        bulletMatch[1]
+                    ) +
+                "</li>"
+            );
+
+            continue;
+        }
+
+
+        /*
+         * Numbered list
+         */
+        const numberedMatch =
+            line.match(
+                /^\s*\d+[.)]\s+(.+)$/
+            );
+
+        if (numberedMatch) {
+
+            flushParagraph();
+            flushQuote();
+
+            if (listType !== "ol") {
+
+                closeList();
+
+                output.push("<ol>");
+
+                listType = "ol";
+            }
+
+            output.push(
+                "<li>" +
+                    renderInlineMarkdown(
+                        numberedMatch[1]
+                    ) +
+                "</li>"
+            );
+
+            continue;
+        }
+
+
+        /*
+         * Normal paragraph text
+         */
+        closeList();
+        flushQuote();
+
+        paragraph.push(line);
+    }
+
+
+    /*
+     * Flush anything remaining.
+     */
+    if (codeBlock) {
+        closeCodeBlock();
+    }
+
+    flushParagraph();
+    closeList();
+    flushQuote();
+
+
+    return output.join("");
+}
+
+
+
 /* =========================
    SCROLL
 ========================= */
@@ -4092,7 +4528,9 @@ function addMessage(
         "message-text";
 
     textElement.innerHTML =
-        escapeHtml(text);
+        role === "ai"
+            ? renderQntaAIResponse(text)
+            : escapeHtml(text);
 
 
     body.appendChild(
