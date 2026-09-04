@@ -269,10 +269,13 @@ def clean_text(value):
 
 def create_conversation(
     user_id,
-    client_id,
-    title="New chat"
+    client_id=None,
+    title="New chat",
+    conversation_id=None
 ):
-    conversation_id = uuid.uuid4().hex
+    if not conversation_id:
+        conversation_id = uuid.uuid4().hex
+
     timestamp = now_iso()
 
     connection = get_db()
@@ -955,8 +958,10 @@ def conversations():
 def new_conversation():
     user_id = get_user_id()
 
-    conversation_id = create_conversation(
-        user_id
+    conversation_id = uuid.uuid4().hex
+    create_conversation(
+        user_id,
+        conversation_id=conversation_id
     )
 
     return jsonify(
@@ -1194,9 +1199,27 @@ def chat():
     # --------------------------------------------------------
 
     if not conversation_id:
-        conversation_id = create_conversation(
+        return jsonify(
+            {
+                "error":
+                    "Conversation ID required."
+            }
+        ), 400
+
+    existing = get_db().execute(
+        """
+        SELECT id
+        FROM conversations
+        WHERE id = ?
+        """,
+        (conversation_id,)
+    ).fetchone()
+
+    if not existing:
+        create_conversation(
             user_id,
-            client_id
+            client_id,
+            conversation_id=conversation_id
         )
 
     if not conversation_belongs_to_user(
