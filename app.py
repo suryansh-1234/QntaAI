@@ -763,6 +763,61 @@ ALLOWED_MODELS = {
 # OPENROUTER
 # ============================================================
 
+
+
+
+
+
+
+QNTAAI_TOOL_POLICY = """
+QntaAI performs web searches itself before calling the language model.
+
+Never output tool calls, function calls, XML tool syntax, special tool
+tokens, or fake tool execution messages.
+
+Never output:
+<tool_call>
+</tool_call>
+<|tool_call_start|>
+<|tool_call_end|>
+<|tool_calls_section_begin|>
+<|tool_calls_section_end|>
+
+Do not claim that you personally searched the web or executed a tool.
+
+If web information is needed, use only information supplied by QntaAI
+in the conversation or in the web-search context.
+
+Respond directly to the user in normal plain text.
+"""
+
+def contains_raw_tool_call(text):
+    """
+    Return True when a model response contains unsupported
+    model-generated tool-call syntax.
+
+    QntaAI performs web searches itself. Models do not have
+    direct access to QntaAI's web tools.
+    """
+    if not isinstance(text, str):
+        return False
+
+    lowered = text.lower()
+
+    markers = (
+        "<tool_call>",
+        "</tool_call>",
+        "<|tool_call_start|>",
+        "<|tool_call_end|>",
+        "<|tool_calls_section_begin|>",
+        "<|tool_calls_section_end|>",
+        "<|python_tag|>",
+        "<|assistant to=web.run|>",
+        "assistant to=web.run",
+    )
+
+    return any(marker in lowered for marker in markers)
+
 def ask_openrouter(messages, model):
     if not OPENROUTER_API_KEY:
         raise RuntimeError(
@@ -776,9 +831,24 @@ def ask_openrouter(messages, model):
         "X-Title": APP_TITLE,
     }
 
+    safe_messages = list(messages)
+
+    # QntaAI owns web searching. The selected language model
+    # must never emit its own unsupported tool syntax.
+    if safe_messages and safe_messages[0].get("role") == "system":
+
+        safe_messages[0] = {
+            **safe_messages[0],
+            "content": (
+                safe_messages[0].get("content", "")
+                + "\n\n"
+                + QNTAAI_TOOL_POLICY
+            ),
+        }
+
     payload = {
         "model": model,
-        "messages": messages,
+        "messages": safe_messages,
         "max_tokens": 5000,
     }
 
@@ -914,6 +984,22 @@ def ask_openrouter(messages, model):
     if not content:
         raise RuntimeError(
             "QntaAI received an empty response from OpenRouter."
+        )
+
+    # --------------------------------------------------------
+    # BLOCK UNSUPPORTED MODEL TOOL CALLS
+    # --------------------------------------------------------
+
+    if contains_raw_tool_call(content):
+
+        print(
+            "Blocked unsupported model-generated tool call.",
+            flush=True
+        )
+
+        raise RuntimeError(
+            "The selected model returned unsupported tool-call "
+            "syntax. Please try Auto (Free) or another model."
         )
 
     return content
@@ -1377,12 +1463,28 @@ def chat():
                 "role": "system",
                 "content": (
                     "The following information "
-                    "was retrieved from a web "
-                    "search. Use it when relevant. "
-                    "Do not invent details that "
-                    "are not supported by the "
-                    "information.\n\n"
+                    "was retrieved by QntaAI's web "
+                    "search system. Use it when "
+                    "relevant. Do not invent details "
+                    "that are not supported by the "
+                    "information. Do not claim that "
+                    "you personally performed the "
+                    "search.\n\n"
                     f"{web_context}"
+                )
+            }
+        )
+
+    elif web_enabled:
+        ai_messages.append(
+            {
+                "role": "system",
+                "content": (
+                    "QntaAI attempted a web search, "
+                    "but no usable search results "
+                    "were returned. Do not invent "
+                    "current information and do not "
+                    "claim that you searched the web."
                 )
             }
         )

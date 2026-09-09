@@ -5882,6 +5882,26 @@ if (
         }
 
 
+
+        /*
+         * Defensive protection against unsupported model
+         * tool-call syntax reaching the renderer.
+         *
+         * The backend should already reject these responses.
+         */
+        const rawToolCallPattern =
+            /<tool_call>|<\/tool_call>|<\|tool_call_start\|>|<\|tool_call_end\|>|<\|tool_calls_section_begin\|>|<\|tool_calls_section_end\|>/i;
+
+        if (rawToolCallPattern.test(reply)) {
+
+            addMessage(
+                "ai",
+                "⚠️ The selected model returned unsupported tool-call syntax. Please try Auto (Free) or another model."
+            );
+
+            return;
+        }
+
         /* =========================
            SOURCES
         ========================= */
